@@ -1,0 +1,49 @@
+{
+    "store_name": "Sourabh Store",
+    "logo": "store_logo.png",
+    "display_theme": "light",
+    "messages": {
+        "welcome": "Welcome To Saurabh Store",
+        "next_cashier": "NEXT CASHIER",
+        "proceed": "Please Go To",
+        "now_calling": "Now Calling",
+        "next": "NEXT",
+        "ready": "Please Proceed When Ready",
+        "wait": "Please Wait For Next Cashier",
+        "thank_you": "THANK YOU VERY MUCH"
+    },
+    "registers": {
+        "1": {
+            "name": "Checkout Counter 1",
+            "audio": "register1.mp3"
+        },
+        "2": {
+            "name": "Checkout Counter 2",
+            "audio": "register2.mp3"
+        },
+        "3": {
+            "name": "Checkout Counter 3",
+            "audio": "register3.mp3"
+        },
+        "4": {
+            "name": "Checkout Counter 4",
+            "audio": null
+        },
+        "5": {
+            "name": "Checkout Counter 5",
+            "audio": null
+        },
+        "6": {
+            "name": "Checkout Counter 6",
+            "audio": null
+        },
+        "7": {
+            "name": "Checkout Counter 7",
+            "audio": null
+        },
+        "8": {
+            "name": "Checkout Counter 8",
+            "audio": null
+        }
+    }
+}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MiRen Next - Admin Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background: #050909;
+            color: white;
+
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .login-container {
+            width: 400px;
+            max-width: 90%;
+            padding: 40px;
+
+            background: #111818;
+            border-radius: 15px;
+
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+
+            text-align: center;
+        }
+
+        .brand {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .powered-by {
+            color: #999;
+            margin-bottom: 35px;
+        }
+
+        .title {
+            font-size: 22px;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+
+            border: none;
+            border-radius: 8px;
+
+            font-size: 16px;
+
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+
+            border: none;
+            border-radius: 8px;
+
+            background: #16d34a;
+            color: black;
+
+            font-size: 17px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .error {
+            margin-bottom: 15px;
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+
+        <div class="brand">
+            MiRen Next
+        </div>
+
+        <div class="powered-by">
+            Powered by Suntech
+        </div>
+
+        <div class="title">
+            Admin Login
+        </div>
+
+        {% if error %}
+            <div class="error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Enter admin password"
+                required
+                autofocus
+            >
+
+            <button type="submit">
+                LOGIN
+            </button>
+
+        </form>
+
+    </div>
+
+</body>
+</html>

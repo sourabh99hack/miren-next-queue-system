@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MiRen Next - Simulator</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            background: #111;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .powered-by {
+            color: #aaa;
+            margin-bottom: 40px;
+        }
+
+        .register-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        button {
+            padding: 30px 20px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+        }
+
+        .register-button {
+            background: #16d34a;
+            color: black;
+        }
+
+        .complete-button {
+            margin-top: 30px;
+            background: #2563eb;
+            color: white;
+        }
+
+        .clear-button {
+            margin-top: 15px;
+            background: #dc2626;
+            color: white;
+        }
+
+        #status {
+            margin-top: 30px;
+            font-size: 20px;
+            color: #ccc;
+        }
+
+        @media (max-width: 700px) {
+            .register-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>MiRen Next</h1>
+
+    <div class="powered-by">
+        Powered by Suntech
+    </div>
+
+    <div class="register-grid">
+
+        <button class="register-button" onclick="callRegister(1)">
+            REGISTER 1
+        </button>
+
+        <button class="register-button" onclick="callRegister(2)">
+            REGISTER 2
+        </button>
+
+        <button class="register-button" onclick="callRegister(3)">
+            REGISTER 3
+        </button>
+
+        <button class="register-button" onclick="callRegister(4)">
+            REGISTER 4
+        </button>
+
+        <button class="register-button" onclick="callRegister(5)">
+            REGISTER 5
+        </button>
+
+        <button class="register-button" onclick="callRegister(6)">
+            REGISTER 6
+        </button>
+
+        <button class="register-button" onclick="callRegister(7)">
+            REGISTER 7
+        </button>
+
+        <button class="register-button" onclick="callRegister(8)">
+            REGISTER 8
+        </button>
+
+    </div>
+
+    <div>
+        <button class="complete-button" onclick="completeCurrent()">
+            COMPLETE CURRENT
+        </button>
+    </div>
+
+    <div>
+        <button class="clear-button" onclick="clearQueue()">
+            CLEAR QUEUE
+        </button>
+    </div>
+
+    <div id="status">
+        Loading...
+    </div>
+
+    <script>
+
+        async function callRegister(register) {
+
+            try {
+
+                const response = await fetch(
+                    `/api/register/${register}/call`,
+                    {
+                        method: "POST"
+                    }
+                );
+
+                const data = await response.json();
+
+                console.log(data);
+
+                updateStatus();
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to call register:",
+                    error
+                );
+
+            }
+        }
+
+
+        async function completeCurrent() {
+
+            try {
+
+                const response = await fetch(
+                    "/api/complete",
+                    {
+                        method: "POST"
+                    }
+                );
+
+                const data = await response.json();
+
+                console.log(data);
+
+                updateStatus();
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to complete register:",
+                    error
+                );
+
+            }
+        }
+
+
+        async function clearQueue() {
+
+            try {
+
+                const response = await fetch(
+                    "/api/clear",
+                    {
+                        method: "POST"
+                    }
+                );
+
+                const data = await response.json();
+
+                console.log(data);
+
+                updateStatus();
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to clear queue:",
+                    error
+                );
+
+            }
+        }
+
+
+        async function updateStatus() {
+
+            try {
+
+                const response = await fetch(
+                    "/api/status"
+                );
+
+                const data = await response.json();
+
+                let current =
+                    data.current_register === null
+                        ? "None"
+                        : data.current_register;
+
+                let queue =
+                    data.queue.length === 0
+                        ? "Empty"
+                        : data.queue.join(", ");
+
+                document.getElementById(
+                    "status"
+                ).innerHTML = `
+                    <div>
+                        Current Register: ${current}
+                    </div>
+
+                    <div>
+                        Queue: ${queue}
+                    </div>
+                `;
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to get status:",
+                    error
+                );
+
+            }
+        }
+
+
+        setInterval(updateStatus, 1000);
+
+        updateStatus();
+
+    </script>
+
+</body>
+</html>

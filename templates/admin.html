@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MiRen Next - Admin</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #050909;
+            color: white;
+
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .header {
+            padding: 25px 40px;
+
+            background: #111818;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .powered-by {
+            color: #999;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .logout-button {
+            padding: 10px 18px;
+
+            background: #dc2626;
+            color: white;
+
+            border: none;
+            border-radius: 7px;
+
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            background: #111818;
+
+            padding: 25px;
+            margin-bottom: 25px;
+
+            border-radius: 12px;
+        }
+
+        .section h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+
+            padding: 12px;
+
+            background: #202828;
+            color: white;
+
+            border: 1px solid #3a4444;
+            border-radius: 7px;
+
+            font-size: 16px;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .register-grid {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 20px;
+        }
+
+        .register-card {
+            padding: 20px;
+
+            background: #1a2222;
+
+            border-radius: 10px;
+        }
+
+        .register-title {
+            font-size: 20px;
+            font-weight: bold;
+
+            margin-bottom: 15px;
+        }
+
+        .save-button {
+            width: 100%;
+
+            padding: 16px;
+
+            border: none;
+            border-radius: 8px;
+
+            background: #16d34a;
+            color: black;
+
+            font-size: 18px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .message {
+            margin-bottom: 20px;
+
+            padding: 12px;
+
+            border-radius: 7px;
+
+            display: none;
+        }
+
+        .success {
+            background: #14532d;
+            color: #bbf7d0;
+        }
+
+        .error {
+            background: #7f1d1d;
+            color: #fecaca;
+        }
+
+        @media (max-width: 700px) {
+
+            .register-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .brand {
+                font-size: 22px;
+            }
+
+        }
+
+        /* Logo upload for store */
+        .logo-preview-container {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .logo-preview {
+            max-width: 250px;
+            max-height: 120px;
+            display: none;
+            object-fit: contain;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .upload-logo-button {
+            padding: 12px 20px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .remove-logo-button {
+            padding: 12px 20px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* audio for registers settings */
+        .register-settings {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 15px;
+        }
+
+        .register-setting {
+            padding: 18px;
+            border: 1px solid #333;
+            border-radius: 10px;
+        }
+
+        .register-setting h3 {
+            margin: 0 0 15px;
+        }
+
+        .register-setting label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .register-setting input[type="text"] {
+            width: 100%;
+            padding: 11px;
+            margin-bottom: 15px;
+        }
+
+        .audio-upload-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .audio-upload-row input[type="file"] {
+            flex: 1;
+        }
+
+        .audio-upload-row button {
+            padding: 9px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .audio-status {
+            margin-top: 8px;
+            font-size: 13px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 800px) {
+            .register-settings {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .register-settings {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .register-setting {
+                padding: 16px;
+                border-radius: 10px;
+            }
+
+            .register-setting h3 {
+                font-size: 20px;
+                margin-bottom: 14px;
+            }
+
+            .register-setting label {
+                font-size: 16px;
+            }
+
+            .register-setting input[type="text"] {
+                padding: 11px;
+                margin-bottom: 14px;
+                font-size: 16px;
+            }
+
+            .audio-upload-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .audio-upload-row input[type="file"] {
+                grid-column: 1 / -1;
+                width: 100%;
+            }
+
+            .audio-upload-row button {
+                width: 100%;
+                padding: 11px 8px;
+                font-size: 14px;
+            }
+
+            .audio-status {
+                margin-top: 8px;
+                font-size: 12px;
+                word-break: break-word;
+            }
+        }
+
+
+        /* select dark or light mode */
+        select {
+            width: 100%;
+            padding: 12px;
+
+            background: #202828;
+            color: white;
+
+            border: 1px solid #3a4444;
+            border-radius: 7px;
+
+            font-size: 16px;
+
+            cursor: pointer;
+        }
+
+        .field-help {
+            display: block;
+
+            margin-top: 6px;
+
+            color: #999;
+
+            font-size: 13px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+
+        <div>
+            <div class="brand">
+                MiRen Next
+            </div>
+
+            <div class="powered-by">
+                Powered by Suntech
+            </div>
+        </div>
+
+        <button class="logout-button" onclick="logout()">
+            Logout
+        </button>
+
+    </div>
+
+
+    <div class="container">
+
+        <div id="success-message" class="message success">
+            Settings saved successfully.
+        </div>
+
+        <div id="error-message" class="message error">
+            Unable to save settings.
+        </div>
+
+
+        <!-- STORE SETTINGS -->
+
+        <div class="section">
+            <h2>
+                Store Settings
+            </h2>
+
+
+            <div class="field">
+
+                <label for="display-theme">
+                    Display Theme
+                </label>
+
+                <select id="display-theme">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+
+                <small class="field-help">
+                    Choose the background theme for the TV display.
+                </small>
+
+            </div>
+
+            <div class="field">
+
+                <label for="store-name">
+                    Store Name
+                </label>
+
+                <input id="store-name" type="text" placeholder="Enter store name">
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="logo">
+                    Store Logo
+                </label>
+
+                <input id="logo" type="file" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+
+            </div>
+
+
+            <div class="logo-preview-container">
+
+                <img id="logo-preview" class="logo-preview" src="" alt="Store Logo Preview">
+
+            </div>
+
+
+            <button type="button" class="upload-logo-button" onclick="uploadLogo()">
+                UPLOAD LOGO
+            </button>
+
+            <button type="button" onclick="removeLogo()" class="remove-logo-button">
+                REMOVE LOGO
+            </button>
+        </div>
+
+
+        <!-- DISPLAY MESSAGES -->
+
+        <div class="section">
+
+            <h2>
+                Display Messages
+            </h2>
+
+
+            <div class="field">
+
+                <label for="welcome">
+                    Welcome Message
+                </label>
+
+                <input id="welcome" type="text">
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="next-cashier">
+                    Next Cashier
+                </label>
+
+                <input id="next-cashier" type="text">
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="proceed">
+                    Proceed Message
+                </label>
+
+                <input id="proceed" type="text">
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="now-calling">
+                    Now Calling
+                </label>
+
+                <input id="now-calling" type="text">
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="next">
+                    Next
+                </label>
+
+                <input id="next" type="text">
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="ready">
+                    Ready Message
+                </label>
+
+                <input id="ready" type="text">
+
+            </div>
+
+            <div class="field">
+
+                <label for="wait">
+                    Wait Message
+                </label>
+
+                <input id="wait" type="text" placeholder="PLEASE WAIT FOR THE NEXT AVAILABLE REGISTER">
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="thank-you">
+                    Thank You Message
+                </label>
+
+                <input id="thank-you" type="text">
+
+            </div>
+
+        </div>
+
+
+        <!-- REGISTER SETTINGS -->
+
+        <div class="section">
+
+            <h2>Register Settings</h2>
+
+            <div class="register-settings">
+
+                {% for register in range(1, 9) %}
+
+                <div class="register-setting">
+
+                    <h3>Register {{ register }}</h3>
+
+                    <label for="register-{{ register }}">
+                        Display Name
+                    </label>
+
+                    <input type="text" id="register-{{ register }}" placeholder="REGISTER {{ register }}">
+
+                    <label>
+                        Register Audio
+                    </label>
+
+                    <div class="audio-upload-row">
+
+                        <input type="file" id="audio-{{ register }}" accept=".mp3,audio/mpeg">
+
+                        <button type="button" onclick="uploadAudio({{ register }})">
+                            Upload MP3
+                        </button>
+
+                        <button type="button" onclick="removeAudio({{ register }})">
+                            Remove
+                        </button>
+                    </div>
+
+                    <div id="audio-status-{{ register }}" class="audio-status">
+                        No custom audio uploaded
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+        </div>
+
+
+        <button class="save-button" onclick="saveSettings()">
+            SAVE SETTINGS
+        </button>
+
+    </div>
+
+
+    <script>
+        async function uploadLogo() {
+            const fileInput = document.getElementById("logo");
+
+            if (
+                !fileInput.files ||
+                fileInput.files.length === 0
+            ) {
+
+                alert(
+                    "Please select a logo first."
+                );
+
+                return;
+            }
+
+
+            const file =
+                fileInput.files[0];
+
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                "logo",
+                file
+            );
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/admin/logo",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.error ||
+                        "Unable to upload logo."
+                    );
+
+                }
+
+
+                showSuccess();
+
+
+                // Refresh preview
+                const preview =
+                    document.getElementById(
+                        "logo-preview"
+                    );
+
+
+                preview.src =
+                    `/store-logo/${data.logo}?t=${Date.now()}`;
+
+
+                preview.style.display =
+                    "block";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to upload logo:",
+                    error
+                );
+
+                alert(
+                    error.message
+                );
+
+            }
+
+        }
+        async function removeLogo() {
+            if (!confirm("Are you sure you want to remove the logo?")) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    "/api/admin/logo/remove",
+                    {
+                        method: "POST"
+                    }
+                );
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert("Logo removed successfully.");
+
+                    // Refresh configuration
+                    await loadSettings();
+                } else {
+                    alert(data.error || "Unable to remove logo.");
+                }
+
+            } catch (error) {
+                console.error("Unable to remove logo:", error);
+                alert("Unable to remove logo.");
+            }
+        }
+
+        async function uploadAudio(register) {
+
+            const fileInput =
+                document.getElementById(`audio-${register}`);
+
+            const statusElement =
+                document.getElementById(`audio-status-${register}`);
+
+            if (!fileInput.files.length) {
+                alert("Please select an MP3 file first.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+
+            if (!file.name.toLowerCase().endsWith(".mp3")) {
+                alert("Only MP3 files are allowed.");
+                return;
+            }
+
+            const formData = new FormData();
+
+            formData.append("audio", file);
+
+            try {
+
+                statusElement.textContent =
+                    "Uploading...";
+
+                const response = await fetch(
+                    `/api/admin/audio/${register}`,
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(
+                        data.error || "Unable to upload audio."
+                    );
+                }
+
+                statusElement.textContent =
+                    `Uploaded: ${data.audio}`;
+
+                fileInput.value = "";
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to upload audio:",
+                    error
+                );
+
+                statusElement.textContent =
+                    "Upload failed.";
+
+                alert(error.message);
+            }
+        }
+        async function removeAudio(register) {
+
+            if (!confirm(
+                `Remove audio for Register ${register}?`
+            )) {
+                return;
+            }
+
+            const statusElement =
+                document.getElementById(
+                    `audio-status-${register}`
+                );
+
+            try {
+
+                const response = await fetch(
+                    `/api/admin/audio/${register}/remove`,
+                    {
+                        method: "POST"
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(
+                        data.error || "Unable to remove audio."
+                    );
+                }
+
+                statusElement.textContent =
+                    "No custom audio uploaded";
+
+                document.getElementById(
+                    `audio-${register}`
+                ).value = "";
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to remove audio:",
+                    error
+                );
+
+                alert(error.message);
+            }
+        }
+        async function loadSettings() {
+
+            try {
+
+                const response = await fetch(
+                    "/api/config"
+                );
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Unable to load configuration"
+                    );
+
+                }
+
+                const config =
+                    await response.json();
+
+                document.getElementById("display-theme").value = config.display_theme || "light";
+
+                if (config.logo) {
+                    // Store logo
+                    const preview =
+                        document.getElementById(
+                            "logo-preview"
+                        );
+
+                    preview.src =
+                        `/store-logo/${config.logo}`;
+
+                    preview.style.display =
+                        "block";
+                }
+
+                // Store name
+
+                document.getElementById(
+                    "store-name"
+                ).value =
+                    config.store_name || "";
+
+
+                // Messages
+
+                const messages =
+                    config.messages || {};
+
+
+                document.getElementById(
+                    "welcome"
+                ).value =
+                    messages.welcome || "";
+
+
+                document.getElementById(
+                    "next-cashier"
+                ).value =
+                    messages.next_cashier || "";
+
+
+                document.getElementById(
+                    "proceed"
+                ).value =
+                    messages.proceed || "";
+
+
+                document.getElementById(
+                    "now-calling"
+                ).value =
+                    messages.now_calling || "";
+
+
+                document.getElementById(
+                    "next"
+                ).value =
+                    messages.next || "";
+
+
+                document.getElementById(
+                    "ready"
+                ).value =
+                    messages.ready || "";
+
+                document.getElementById(
+                    "wait"
+                ).value =
+                    messages.wait || "";
+
+                document.getElementById(
+                    "thank-you"
+                ).value =
+                    messages.thank_you || "";
+
+
+                // Registers
+
+                const registers =
+                    config.registers || {};
+
+
+                for (
+                    let register = 1;
+                    register <= 8;
+                    register++
+                ) {
+
+                    const registerConfig =
+                        registers[String(register)] || {};
+
+
+                    document.getElementById(
+                        `register-${register}`
+                    ).value =
+                        registerConfig.name ||
+                        `REGISTER ${register}`;
+
+                    const audioStatus =
+                        document.getElementById(
+                            `audio-status-${register}`
+                        );
+
+                    if (registerConfig.audio) {
+                        audioStatus.textContent =
+                            `Uploaded: ${registerConfig.audio}`;
+                    } else {
+                        audioStatus.textContent =
+                            "No custom audio uploaded";
+                    }
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to load settings:",
+                    error
+                );
+
+                showError();
+
+            }
+
+        }
+
+        async function saveSettings() {
+            const currentConfig = await fetch("/api/config").then(response => response.json());
+            const config = {
+
+
+                store_name:
+                    document.getElementById(
+                        "store-name"
+                    ).value.trim(),
+
+                logo: currentConfig.logo,
+                display_theme: document.getElementById("display-theme").value,
+                messages: {
+
+                    welcome:
+                        document.getElementById(
+                            "welcome"
+                        ).value,
+
+                    next_cashier:
+                        document.getElementById(
+                            "next-cashier"
+                        ).value,
+
+                    proceed:
+                        document.getElementById(
+                            "proceed"
+                        ).value,
+
+                    now_calling:
+                        document.getElementById(
+                            "now-calling"
+                        ).value,
+
+                    next:
+                        document.getElementById(
+                            "next"
+                        ).value,
+
+                    ready:
+                        document.getElementById(
+                            "ready"
+                        ).value,
+
+                    wait:
+                        document.getElementById(
+                            "wait"
+                        ).value,
+
+                    thank_you:
+                        document.getElementById(
+                            "thank-you"
+                        ).value
+
+                },
+
+                registers: {}
+
+            };
+
+
+            for (
+                let register = 1;
+                register <= 8;
+                register++
+            ) {
+
+                config.registers[
+                    String(register)
+                ] = {
+
+                    name:
+                        document.getElementById(
+                            `register-${register}`
+                        ).value.trim(),
+
+                    audio: currentConfig.registers[String(register)]?.audio || null
+
+                };
+
+            }
+
+
+            try {
+
+                const response = await fetch(
+                    "/api/config",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(config)
+                    }
+                );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Unable to save settings"
+                    );
+
+                }
+
+
+                showSuccess();
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to save settings:",
+                    error
+                );
+
+                showError();
+
+            }
+
+        }
+
+
+        function showSuccess() {
+
+            const element =
+                document.getElementById(
+                    "success-message"
+                );
+
+            element.style.display =
+                "block";
+
+            document.getElementById(
+                "error-message"
+            ).style.display =
+                "none";
+
+        }
+
+
+        function showError() {
+
+            const element =
+                document.getElementById(
+                    "error-message"
+                );
+
+            element.style.display =
+                "block";
+
+            document.getElementById(
+                "success-message"
+            ).style.display =
+                "none";
+
+        }
+
+
+        async function logout() {
+
+            await fetch(
+                "/admin/logout"
+            );
+
+            window.location.href =
+                "/admin";
+
+        }
+
+
+        loadSettings();
+
+    </script>
+
+</body>
+
+</html>
