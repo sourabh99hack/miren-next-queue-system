@@ -12,6 +12,7 @@ from functools import wraps
 from services.queue_manager import QueueManager
 from services.announcement import AnnouncementService
 from services.config_manager import ConfigManager
+from hardware.gpio_controller import GPIOController
 from werkzeug.utils import secure_filename
 import os
 import threading
@@ -55,6 +56,7 @@ announcement_service = AnnouncementService(
     config_manager,
     AUDIO_FOLDER
 )
+
 
 # Admin required function
 def admin_required(function):
@@ -247,6 +249,52 @@ def complete_after_delay(current_call_id):
             timer.start()
 
 
+def process_register_call(register):
+
+    added = queue_manager.request_register(
+        register
+    )
+
+    status = queue_manager.get_status()
+
+    # Only start timer/announcement if this
+    # register became the current register.
+    if (
+        added
+        and status["current_register"] == register
+    ):
+        start_call_timer()
+
+    return added, status
+
+def handle_gpio_register_press(register):
+
+    print(
+        f"Physical button pressed: "
+        f"Register {register}"
+    )
+
+    try:
+
+        added, status = process_register_call(
+            register
+        )
+
+        print(
+            f"Register {register}: "
+            f"added={added}, "
+            f"current={status['current_register']}, "
+            f"queue={status['queue']}"
+        )
+
+    except ValueError as error:
+
+        print(
+            f"GPIO Register {register} error: "
+            f"{error}"
+        )
+
+
 @app.route(
     "/api/register/<int:register>/call",
     methods=["POST"]
@@ -255,25 +303,14 @@ def call_register(register):
 
     try:
 
-        added = queue_manager.request_register(
+        added, status = process_register_call(
             register
         )
-
-        status = queue_manager.get_status()
-
-        # Only announce if this register
-        # became the current register
-        if (
-            added
-            and status["current_register"] == register
-        ):
-
-            start_call_timer()
 
         return jsonify({
             "success": True,
             "added": added,
-            "status": queue_manager.get_status()
+            "status": status
         })
 
     except ValueError as error:
@@ -282,6 +319,43 @@ def call_register(register):
             "success": False,
             "error": str(error)
         }), 400
+
+
+# @app.route(
+#     "/api/register/<int:register>/call",
+#     methods=["POST"]
+# )
+# def call_register(register):
+
+#     try:
+
+#         added = queue_manager.request_register(
+#             register
+#         )
+
+#         status = queue_manager.get_status()
+
+#         # Only announce if this register
+#         # became the current register
+#         if (
+#             added
+#             and status["current_register"] == register
+#         ):
+
+#             start_call_timer()
+
+#         return jsonify({
+#             "success": True,
+#             "added": added,
+#             "status": queue_manager.get_status()
+#         })
+
+#     except ValueError as error:
+
+#         return jsonify({
+#             "success": False,
+#             "error": str(error)
+#         }), 400
 
 
 @app.route(
@@ -617,11 +691,19 @@ def register_audio(filename):
         AUDIO_FOLDER,
         filename
 )
+
+
 if __name__ == "__main__":
 
+    gpio_controller = GPIOController(
+        on_register_pressed=handle_gpio_register_press
+    )
+
+    gpio_controller.start()
+    
     app.run(
         host="0.0.0.0",
         port=5001,
-        debug=True,
+        debug=False,
         threaded=True
     )
