@@ -1,4 +1,6 @@
 import lgpio
+import threading
+import time
 
 
 class GPIOController:
@@ -18,11 +20,15 @@ class GPIOController:
 
     def __init__(self, on_register_pressed):
 
-        self.on_register_pressed = on_register_pressed
+        self.on_register_pressed = (
+            on_register_pressed
+        )
 
         self.handle = None
-        self.callbacks = []
         self.running = False
+        self.thread = None
+
+        self.previous_states = {}
 
     def start(self):
 
@@ -31,38 +37,25 @@ class GPIOController:
 
         print("Starting GPIO controller...")
 
-        self.handle = lgpio.gpiochip_open(self.CHIP)
+        self.handle = lgpio.gpiochip_open(
+            self.CHIP
+        )
 
+        # Configure all GPIOs
         for register, gpio in self.GPIO_REGISTERS.items():
 
-            # Claim GPIO as input with pull-up.
-            # Released = HIGH
-            # Pressed = LOW
             lgpio.gpio_claim_input(
                 self.handle,
                 gpio,
                 lgpio.SET_PULL_UP
             )
 
-            # Detect button press (HIGH -> LOW)
-            callback = lgpio.callback(
+            state = lgpio.gpio_read(
                 self.handle,
-                gpio,
-                lgpio.FALLING_EDGE,
-                self._button_callback
+                gpio
             )
 
-            self.callbacks.append(callback)
-
-            # Software debounce
-            try:
-                lgpio.gpio_set_debounce_micros(
-                    self.handle,
-                    gpio,
-                    100000
-                )
-            except Exception:
-                pass
+            self.previous_states[gpio] = state
 
             print(
                 f"Register {register}: "
@@ -71,49 +64,76 @@ class GPIOController:
 
         self.running = True
 
-        print("GPIO controller started.")
-
-    def _button_callback(
-        self,
-        gpio,
-        level,
-        timestamp
-    ):
-
-        if level != 0:
-            return
-
-        register = self._get_register_from_gpio(gpio)
-
-        if register is None:
-            return
-
-        print(
-            f"Physical button pressed: "
-            f"Register {register} "
-            f"(GPIO{gpio})"
+        # Start background monitoring
+        self.thread = threading.Thread(
+            target=self._monitor_buttons,
+            daemon=True
         )
 
-        try:
+        self.thread.start()
 
-            self.on_register_pressed(register)
+        print("GPIO controller started.")
 
-        except Exception as error:
+    def _monitor_buttons(self):
 
-            print(
-                f"Error processing "
-                f"Register {register}: "
-                f"{error}"
-            )
+        while self.running:
 
-    def _get_register_from_gpio(self, gpio):
+            for register, gpio in (
+                self.GPIO_REGISTERS.items()
+            ):
 
-        for register, register_gpio in self.GPIO_REGISTERS.items():
+                try:
 
-            if register_gpio == gpio:
-                return register
+                    current_state = (
+                        lgpio.gpio_read(
+                            self.handle,
+                            gpio
+                        )
+                    )
 
-        return None
+                    previous_state = (
+                        self.previous_states[gpio]
+                    )
+
+                    # HIGH -> LOW means button pressed
+                    if (
+                        previous_state == 1
+                        and current_state == 0
+                    ):
+
+                        print(
+                            f"Physical button pressed: "
+                            f"Register {register} "
+                            f"(GPIO{gpio})"
+                        )
+
+                        try:
+
+                            self.on_register_pressed(
+                                register
+                            )
+
+                        except Exception as error:
+
+                            print(
+                                f"Error processing "
+                                f"Register {register}: "
+                                f"{error}"
+                            )
+
+                    self.previous_states[gpio] = (
+                        current_state
+                    )
+
+                except Exception as error:
+
+                    print(
+                        f"GPIO{gpio} read error: "
+                        f"{error}"
+                    )
+
+            # 20ms polling interval
+            time.sleep(0.02)
 
     def stop(self):
 
@@ -122,18 +142,19 @@ class GPIOController:
 
         print("Stopping GPIO controller...")
 
-        for callback in self.callbacks:
+        self.running = False
 
-            try:
-                callback.cancel()
-            except Exception:
-                pass
-
-        self.callbacks.clear()
+        if self.thread is not None:
+            self.thread.join(
+                timeout=1
+            )
+            self.thread = None
 
         if self.handle is not None:
 
-            for gpio in self.GPIO_REGISTERS.values():
+            for gpio in (
+                self.GPIO_REGISTERS.values()
+            ):
 
                 try:
                     lgpio.gpio_free(
@@ -149,6 +170,6 @@ class GPIOController:
 
             self.handle = None
 
-        self.running = False
+        self.previous_states.clear()
 
         print("GPIO controller stopped.")
