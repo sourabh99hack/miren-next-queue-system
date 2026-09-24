@@ -1,19 +1,18 @@
 {
-    "store_name": "Sourabh Store",
-    "logo": "store_logo.png",
+    "store_name": "New India Bazar",
+    "logo": "store_logo.jpeg",
     "display_theme": "light",
     "digital_signage": {
         "enabled": true,
-        "start_delay": 60,
-        "slide_interval": 20,
+        "start_delay": 30,
+        "slide_interval": 10,
         "ads": [
-            "ad_1790272838933.png",
-            "ad_1790272844097.png",
-            "ad_1790272848664.png"
+            "ad_1790274486678.jpeg",
+            "ad_1790274491801.jpeg"
         ]
     },
     "messages": {
-        "welcome": "Welcome To Saurabh Store",
+        "welcome": "Welcome To New India Bazar",
         "next_cashier": "NEXT CASHIER",
         "proceed": "Please Go To",
         "now_calling": "Now Calling",

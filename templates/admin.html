@@ -903,14 +903,24 @@
 
                 const data = await response.json();
 
-                if (data.success) {
-                    alert("Logo removed successfully.");
-
-                    // Refresh configuration
-                    await loadSettings();
-                } else {
-                    alert(data.error || "Unable to remove logo.");
+                if (!response.ok || !data.success) {
+                    throw new Error(
+                        data.error || "Unable to remove logo."
+                    );
                 }
+
+                const preview =
+                    document.getElementById("logo-preview");
+
+                preview.src = "";
+                preview.style.display = "none";
+
+                document.getElementById("logo").value = "";
+
+                alert("Logo removed successfully.");
+
+                await loadSettings();
+
 
             } catch (error) {
                 console.error("Unable to remove logo:", error);
@@ -1298,18 +1308,18 @@
                     digitalSignage.ads || []
                 );
 
-                if (config.logo) {
-                    // Store logo
-                    const preview =
-                        document.getElementById(
-                            "logo-preview"
-                        );
+                const preview =
+                    document.getElementById("logo-preview");
 
+                if (config.logo) {
                     preview.src =
-                        `/store-logo/${config.logo}`;
+                        `/store-logo/${config.logo}?t=${Date.now()}`;
 
                     preview.style.display =
                         "block";
+                } else {
+                    preview.src = "";
+                    preview.style.display = "none";
                 }
 
                 // Store name
