@@ -5,17 +5,11 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>MiRen Next</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
 </head>
 
@@ -30,45 +24,25 @@
 
         <div id="idle-screen">
 
-            <img
-                id="store-logo-idle"
-                class="store-logo"
-                src=""
-                alt="Store Logo"
-            >
+            <img id="store-logo-idle" class="store-logo" src="" alt="Store Logo">
 
-            <div
-                id="store-name-idle"
-                class="store-name"
-            >
+            <div id="store-name-idle" class="store-name">
                 MiRen Next
             </div>
 
-            <div
-                id="welcome-message"
-                class="welcome"
-            >
+            <div id="welcome-message" class="welcome">
                 WELCOME TO MiRen Next
             </div>
 
-            <div
-                id="idle-next-cashier"
-                class="next-cashier"
-            >
+            <div id="idle-next-cashier" class="next-cashier">
                 NEXT CASHIER
             </div>
 
-            <div
-                id="idle-wait-message"
-                class="wait-message"
-            >
+            <div id="idle-wait-message" class="wait-message">
                 PLEASE WAIT FOR THE NEXT AVAILABLE REGISTER
             </div>
 
-            <div
-                id="idle-thank-you"
-                class="thank-you"
-            >
+            <div id="idle-thank-you" class="thank-you">
                 THANK YOU
             </div>
 
@@ -79,57 +53,31 @@
         <!-- CALL SCREEN                        -->
         <!-- ================================= -->
 
-        <div
-            id="call-screen"
-            class="hidden"
-        >
+        <div id="call-screen" class="hidden">
 
-            <img
-                id="store-logo-call"
-                class="store-logo"
-                src=""
-                alt="Store Logo"
-            >
+            <img id="store-logo-call" class="store-logo" src="" alt="Store Logo">
 
-            <div
-                id="store-name-call"
-                class="store-name"
-            >
+            <div id="store-name-call" class="store-name">
                 MiRen Next
             </div>
 
-            <div
-                id="call-next-cashier"
-                class="next-cashier"
-            >
+            <div id="call-next-cashier" class="next-cashier">
                 NEXT CASHIER
             </div>
 
-            <div
-                id="proceed-message"
-                class="proceed-message"
-            >
+            <div id="proceed-message" class="proceed-message">
                 PLEASE PROCEED TO
             </div>
 
-            <div
-                id="register-box"
-                class="register-box"
-            >
+            <div id="register-box" class="register-box">
                 REGISTER 1 →
             </div>
 
-            <div
-                id="timer"
-                class="timer"
-            >
+            <div id="timer" class="timer">
                 8
             </div>
 
-            <div
-                id="call-thank-you"
-                class="thank-you"
-            >
+            <div id="call-thank-you" class="thank-you">
                 THANK YOU
             </div>
 
@@ -140,62 +88,45 @@
         <!-- QUEUE SCREEN                       -->
         <!-- ================================= -->
 
-        <div
-            id="queue-screen"
-            class="hidden"
-        >
+        <div id="queue-screen" class="hidden">
 
-            <img
-                id="store-logo-queue"
-                class="store-logo"
-                src=""
-                alt="Store Logo"
-            >
+            <img id="store-logo-queue" class="store-logo" src="" alt="Store Logo">
 
-            <div
-                id="store-name-queue"
-                class="store-name"
-            >
+            <div id="store-name-queue" class="store-name">
                 MiRen Next
             </div>
 
-            <div
-                id="now-calling"
-                class="now-calling"
-            >
+            <div id="now-calling" class="now-calling">
                 NOW CALLING
             </div>
 
-            <div
-                id="queue-current"
-                class="register-box"
-            >
+            <div id="queue-current" class="register-box">
                 REGISTER 1
             </div>
 
-            <div
-                id="next-register"
-                class="next-box"
-            >
+            <div id="next-register" class="next-box">
                 NEXT: REGISTER 2
             </div>
 
-            <div
-                id="queue-timer"
-                class="timer"
-            >
+            <div id="queue-timer" class="timer">
                 8
             </div>
 
-            <div
-                id="queue-message"
-                class="queue-message"
-            >
+            <div id="queue-message" class="queue-message">
                 PLEASE PROCEED WHEN READY
             </div>
 
         </div>
 
+        <!-- ================================= -->
+        <!-- DIGITAL SIGNAGE / AD SCREEN        -->
+        <!-- ================================= -->
+
+        <div id="ad-screen" class="hidden">
+
+            <img id="ad-image" src="" alt="Advertisement">
+
+        </div>
 
         <!-- ================================= -->
         <!-- PRODUCT BRANDING                   -->
@@ -216,7 +147,7 @@
             </span>
 
             <div class="copyright">
-            © 2026 Suntech. All rights reserved.
+                © 2026 Suntech. All rights reserved.
             </div>
 
 
@@ -226,9 +157,7 @@
     </div>
 
 
-    <script
-        src="{{ url_for('static', filename='js/display.js') }}"
-    ></script>
+    <script src="{{ url_for('static', filename='js/display.js') }}"></script>
 
 </body>
 

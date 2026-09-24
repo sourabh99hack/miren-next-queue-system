@@ -2,6 +2,16 @@
     "store_name": "Sourabh Store",
     "logo": "store_logo.png",
     "display_theme": "light",
+    "digital_signage": {
+        "enabled": true,
+        "start_delay": 60,
+        "slide_interval": 20,
+        "ads": [
+            "ad_1790272838933.png",
+            "ad_1790272844097.png",
+            "ad_1790272848664.png"
+        ]
+    },
     "messages": {
         "welcome": "Welcome To Saurabh Store",
         "next_cashier": "NEXT CASHIER",

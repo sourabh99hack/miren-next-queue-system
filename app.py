@@ -12,7 +12,10 @@ from functools import wraps
 from services.queue_manager import QueueManager
 from services.announcement import AnnouncementService
 from services.config_manager import ConfigManager
-from hardware.gpio_controller import GPIOController
+try:
+    from hardware.gpio_controller import GPIOController
+except ModuleNotFoundError:
+    GPIOController = None
 from werkzeug.utils import secure_filename
 import os
 import threading
@@ -48,6 +51,10 @@ ALLOWED_LOGO_EXTENSIONS = {
 AUDIO_FOLDER = os.path.join(BASE_DIR, "config", "audio")
 os.makedirs(AUDIO_FOLDER, exist_ok=True)
 ALLOWED_AUDIO_EXTENSIONS = {"mp3"}
+
+ADS_FOLDER = os.path.join(BASE_DIR, "config", "ads")
+os.makedirs(ADS_FOLDER, exist_ok=True)
+ALLOWED_AD_EXTENSIONS = {"jpg", "jpeg", "png"}
 
 queue_manager = QueueManager(call_duration=8, register_count=8)
 config_manager = ConfigManager()
@@ -693,13 +700,172 @@ def register_audio(filename):
 )
 
 
-if __name__ == "__main__":
 
-    gpio_controller = GPIOController(
-        on_register_pressed=handle_gpio_register_press
+# ==========================================
+# Digital Signage / Advertisement APIs
+# ==========================================
+
+@app.route("/api/admin/ads", methods=["GET"])
+@admin_required
+def get_ads():
+
+    config = config_manager.get()
+
+    digital_signage = config.get(
+        "digital_signage",
+        {}
     )
 
-    gpio_controller.start()
+    ads = digital_signage.get(
+        "ads",
+        []
+    )
+
+    return jsonify({
+        "success": True,
+        "ads": ads
+    })
+
+
+@app.route("/api/admin/ads/upload", methods=["POST"])
+@admin_required
+def upload_ad():
+
+    if "ad" not in request.files:
+        return jsonify({
+            "success": False,
+            "error": "No advertisement file provided."
+        }), 400
+
+    file = request.files["ad"]
+
+    if file.filename == "":
+        return jsonify({
+            "success": False,
+            "error": "No advertisement file selected."
+        }), 400
+
+    filename = secure_filename(file.filename)
+
+    if "." not in filename:
+        return jsonify({
+            "success": False,
+            "error": "Invalid advertisement file."
+        }), 400
+
+    extension = filename.rsplit(
+        ".",
+        1
+    )[-1].lower()
+
+    if extension not in ALLOWED_AD_EXTENSIONS:
+        return jsonify({
+            "success": False,
+            "error": "Only JPG, JPEG and PNG files are allowed."
+        }), 400
+
+    # Generate a unique filename
+    ad_filename = (
+        f"ad_{int(time.time() * 1000)}.{extension}"
+    )
+
+    ad_path = os.path.join(
+        ADS_FOLDER,
+        ad_filename
+    )
+
+    file.save(ad_path)
+
+    config = config_manager.get()
+
+    if "digital_signage" not in config:
+        config["digital_signage"] = {
+            "enabled": True,
+            "start_delay": 60,
+            "slide_interval": 20,
+            "ads": []
+        }
+
+    if "ads" not in config["digital_signage"]:
+        config["digital_signage"]["ads"] = []
+
+    config["digital_signage"]["ads"].append(
+        ad_filename
+    )
+
+    config_manager.save(config)
+
+    return jsonify({
+        "success": True,
+        "message": "Advertisement uploaded successfully.",
+        "filename": ad_filename,
+        "ads": config["digital_signage"]["ads"]
+    })
+
+
+@app.route(
+    "/api/admin/ads/<path:filename>",
+    methods=["POST"]
+)
+@admin_required
+def delete_ad(filename):
+
+    filename = secure_filename(filename)
+
+    config = config_manager.get()
+
+    digital_signage = config.get(
+        "digital_signage",
+        {}
+    )
+
+    ads = digital_signage.get(
+        "ads",
+        []
+    )
+
+    if filename in ads:
+        ads.remove(filename)
+
+    ad_path = os.path.join(
+        ADS_FOLDER,
+        filename
+    )
+
+    if os.path.exists(ad_path):
+        os.remove(ad_path)
+
+    config_manager.save(config)
+
+    return jsonify({
+        "success": True,
+        "message": "Advertisement removed successfully.",
+        "ads": ads
+    })
+
+
+@app.route("/ads/<path:filename>")
+def serve_ad(filename):
+
+    filename = secure_filename(filename)
+
+    return send_from_directory(
+        ADS_FOLDER,
+        filename
+    )
+
+
+
+if __name__ == "__main__":
+
+    if GPIOController is not None:
+        gpio_controller = GPIOController(
+            on_register_pressed=handle_gpio_register_press
+        )
+        gpio_controller.start()
+    else:
+        gpio_controller = None
+        print("GPIO controller not available. Running in simulator mode.")
     
     app.run(
         host="0.0.0.0",

@@ -1,7 +1,18 @@
 let previousCurrent = null;
-
 let configuration = null;
+let advertisementInitialized = false;
 
+/*
+========================================
+DIGITAL SIGNAGE STATE
+========================================
+*/
+
+let adTimer = null;
+let adSlideTimer = null;
+let currentAdIndex = 0;
+let adsVisible = false;
+let lastActivityTime = Date.now();
 
 /*
 ========================================
@@ -29,6 +40,14 @@ async function getConfiguration() {
             await response.json();
 
         updateConfiguration();
+
+        if (!advertisementInitialized) {
+
+            advertisementInitialized = true;
+
+            resetAdvertisementTimer();
+
+        }
 
     } catch (error) {
 
@@ -229,6 +248,273 @@ function updateDisplayTheme() {
     document.body.setAttribute("data-theme", theme);
 }
 
+
+/*
+========================================
+DIGITAL SIGNAGE
+========================================
+*/
+
+function getDigitalSignageConfig() {
+
+    if (!configuration) {
+        return null;
+    }
+
+    return configuration.digital_signage || null;
+}
+
+
+function getAdScreen() {
+
+    return document.getElementById(
+        "ad-screen"
+    );
+
+}
+
+
+function hideAdvertisements() {
+
+    const adScreen =
+        getAdScreen();
+
+    if (adScreen) {
+
+        adScreen.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    adsVisible = false;
+
+
+    if (adTimer) {
+
+        clearTimeout(adTimer);
+
+        adTimer = null;
+
+    }
+
+
+    if (adSlideTimer) {
+
+        clearInterval(
+            adSlideTimer
+        );
+
+        adSlideTimer = null;
+
+    }
+
+}
+
+
+function resetAdvertisementTimer() {
+
+    hideAdvertisements();
+
+    currentAdIndex = 0;
+
+    lastActivityTime =
+        Date.now();
+
+
+    const signage =
+        getDigitalSignageConfig();
+
+
+    if (
+        !signage ||
+        signage.enabled === false ||
+        !signage.ads ||
+        signage.ads.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    const startDelay =
+        Math.max(
+            0,
+            Number(
+                signage.start_delay ?? 60
+            )
+        );
+
+
+    adTimer = setTimeout(
+        showAdvertisements,
+        startDelay * 1000
+    );
+
+}
+
+
+function showAdvertisements() {
+
+    const signage =
+        getDigitalSignageConfig();
+
+
+    if (
+        !signage ||
+        signage.enabled === false ||
+        !signage.ads ||
+        signage.ads.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+    Do not show advertisements if
+    someone is currently being called.
+    */
+
+    const adScreen =
+        getAdScreen();
+
+
+    if (!adScreen) {
+
+        console.warn(
+            "Advertisement screen not found."
+        );
+
+        return;
+
+    }
+
+
+    adsVisible = true;
+
+    currentAdIndex = 0;
+
+
+    updateAdvertisement();
+
+
+    adScreen.classList.remove(
+        "hidden"
+    );
+
+
+    /*
+    Start rotating advertisements
+    */
+
+    const slideInterval =
+        Math.max(
+            1,
+            Number(
+                signage.slide_interval ?? 20
+            )
+        );
+
+
+    if (signage.ads.length > 1) {
+
+        adSlideTimer =
+            setInterval(
+                showNextAdvertisement,
+                slideInterval * 1000
+            );
+
+    }
+
+}
+
+
+function updateAdvertisement() {
+
+    const signage =
+        getDigitalSignageConfig();
+
+
+    if (
+        !signage ||
+        !signage.ads ||
+        signage.ads.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    const adScreen =
+        getAdScreen();
+
+
+    if (!adScreen) {
+
+        return;
+
+    }
+
+
+    const adImage =
+        document.getElementById(
+            "ad-image"
+        );
+
+
+    if (!adImage) {
+
+        return;
+
+    }
+
+
+    const filename =
+        signage.ads[
+        currentAdIndex
+        ];
+
+
+    adImage.src =
+        `/ads/${filename}?t=${Date.now()}`;
+
+}
+
+
+function showNextAdvertisement() {
+
+    const signage =
+        getDigitalSignageConfig();
+
+
+    if (
+        !signage ||
+        !signage.ads ||
+        signage.ads.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    currentAdIndex =
+        (
+            currentAdIndex + 1
+        ) %
+        signage.ads.length;
+
+
+    updateAdvertisement();
+
+}
+
+
 /*
 ========================================
 GET REGISTER NAME
@@ -362,6 +648,38 @@ function updateDisplay(data) {
     const queue =
         data.queue || [];
 
+    /*
+------------------------------------
+Digital Signage Activity Detection
+------------------------------------
+*/
+
+    if (current !== null) {
+
+        /*
+        A register is active.
+        Advertisements must immediately stop.
+        */
+
+        hideAdvertisements();
+
+        lastActivityTime =
+            Date.now();
+
+    } else if (adsVisible) {
+
+        /*
+        No register is active but ads
+        are already showing.
+    
+        Keep the advertisement screen.
+        */
+
+        return;
+
+    }
+
+
     const remainingSeconds =
         data.remaining_seconds || 0;
 
@@ -401,6 +719,17 @@ function updateDisplay(data) {
         queueScreen.classList.add(
             "hidden"
         );
+
+        /*
+    If we just finished a register call,
+    restart the advertisement timer.
+    */
+
+        if (previousCurrent !== null) {
+
+            resetAdvertisementTimer();
+
+        }
 
         previousCurrent = null;
 

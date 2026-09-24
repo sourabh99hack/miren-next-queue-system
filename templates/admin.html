@@ -329,6 +329,106 @@
         }
 
 
+        /* Digital signage */
+
+        .digital-signage-settings {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .digital-signage-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .digital-signage-toggle input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .ad-upload-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .ad-upload-row input[type="file"] {
+            flex: 1;
+        }
+
+        .ad-upload-button,
+        .remove-ad-button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 7px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .ad-upload-button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .remove-ad-button {
+            background: #dc2626;
+            color: white;
+        }
+
+        .ad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .ad-card {
+            background: #1a2222;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .ad-preview {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border-radius: 7px;
+            background: #000;
+            display: block;
+        }
+
+        .ad-filename {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #aaa;
+            word-break: break-all;
+        }
+
+        .ad-recommendation {
+            margin-top: 10px;
+            padding: 12px;
+            background: #202828;
+            border-radius: 7px;
+            color: #aaa;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 800px) {
+            .digital-signage-settings {
+                grid-template-columns: 1fr;
+            }
+
+            .ad-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
         /* select dark or light mode */
         select {
             width: 100%;
@@ -551,6 +651,97 @@
 
         </div>
 
+        <div class="section">
+
+            <h2>Digital Signage</h2>
+
+            <div class="field">
+
+                <label>
+                    Enable Digital Signage
+                </label>
+
+                <div class="digital-signage-toggle">
+
+                    <input type="checkbox" id="digital-signage-enabled">
+
+                    <span>
+                        Show advertisements when the system is idle.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="digital-signage-settings">
+
+                <div class="field">
+
+                    <label for="ad-start-delay">
+                        Start Showing Ads After
+                    </label>
+
+                    <input id="ad-start-delay" type="number" min="0" value="60">
+
+                    <small class="field-help">
+                        Time in seconds after the system becomes idle.
+                    </small>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="ad-slide-interval">
+                        Advertisement Slide Interval
+                    </label>
+
+                    <input id="ad-slide-interval" type="number" min="1" value="20">
+
+                    <small class="field-help">
+                        Time in seconds before switching to the next advertisement.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Upload Advertisement
+                </label>
+
+                <div class="ad-upload-row">
+
+                    <input type="file" id="ad-file" accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+
+                    <button type="button" class="ad-upload-button" onclick="uploadAd()">
+                        UPLOAD AD
+                    </button>
+
+                </div>
+
+                <div class="ad-recommendation">
+
+                    <strong>Recommended Advertisement Format</strong><br>
+
+                    • JPG, JPEG or PNG<br>
+                    • 1920 × 1080 resolution<br>
+                    • 16:9 landscape orientation<br>
+                    • Use high-quality images for TV display
+
+                </div>
+
+            </div>
+
+
+            <div id="ad-grid" class="ad-grid"></div>
+
+        </div>
+
 
         <!-- REGISTER SETTINGS -->
 
@@ -599,6 +790,7 @@
 
             </div>
         </div>
+
 
 
         <button class="save-button" onclick="saveSettings()">
@@ -836,6 +1028,233 @@
                 alert(error.message);
             }
         }
+
+        async function loadAds() {
+
+            try {
+
+                const response = await fetch("/api/admin/ads");
+
+                if (!response.ok) {
+                    throw new Error("Unable to load advertisements.");
+                }
+
+                const data = await response.json();
+
+                renderAds(data.ads || []);
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to load advertisements:",
+                    error
+                );
+
+            }
+        }
+
+
+        function renderAds(ads) {
+
+            const grid =
+                document.getElementById("ad-grid");
+
+            grid.innerHTML = "";
+
+            if (!ads.length) {
+
+                grid.innerHTML = `
+            <div class="field-help">
+                No advertisements uploaded.
+            </div>
+        `;
+
+                return;
+            }
+
+
+            ads.forEach(filename => {
+
+                const card =
+                    document.createElement("div");
+
+                card.className = "ad-card";
+
+                card.innerHTML = `
+
+            <img
+                class="ad-preview"
+                src="/ads/${filename}?t=${Date.now()}"
+                alt="Advertisement"
+            >
+
+            <div class="ad-filename">
+                ${filename}
+            </div>
+
+            <button
+                type="button"
+                class="remove-ad-button"
+                style="margin-top:10px;width:100%;"
+                onclick="removeAd('${filename}')"
+            >
+                REMOVE
+            </button>
+
+        `;
+
+                grid.appendChild(card);
+
+            });
+        }
+
+
+        async function uploadAd() {
+
+            const fileInput =
+                document.getElementById("ad-file");
+
+            if (
+                !fileInput.files ||
+                fileInput.files.length === 0
+            ) {
+
+                alert(
+                    "Please select an advertisement image first."
+                );
+
+                return;
+            }
+
+
+            const file =
+                fileInput.files[0];
+
+
+            const allowedTypes = [
+                "image/jpeg",
+                "image/png"
+            ];
+
+
+            if (!allowedTypes.includes(file.type)) {
+
+                alert(
+                    "Only JPG, JPEG and PNG images are allowed."
+                );
+
+                return;
+            }
+
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                "ad",
+                file
+            );
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/admin/ads/upload",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok || !data.success) {
+
+                    throw new Error(
+                        data.error ||
+                        "Unable to upload advertisement."
+                    );
+
+                }
+
+
+                fileInput.value = "";
+
+                await loadAds();
+
+                showSuccess();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to upload advertisement:",
+                    error
+                );
+
+                alert(error.message);
+
+            }
+        }
+
+
+        async function removeAd(filename) {
+
+            if (
+                !confirm(
+                    "Remove this advertisement?"
+                )
+            ) {
+                return;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `/api/admin/ads/${encodeURIComponent(filename)}`,
+                        {
+                            method: "POST"
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok || !data.success) {
+
+                    throw new Error(
+                        data.error ||
+                        "Unable to remove advertisement."
+                    );
+
+                }
+
+
+                await loadAds();
+
+                showSuccess();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to remove advertisement:",
+                    error
+                );
+
+                alert(error.message);
+
+            }
+        }
+
         async function loadSettings() {
 
             try {
@@ -856,6 +1275,28 @@
                     await response.json();
 
                 document.getElementById("display-theme").value = config.display_theme || "light";
+
+                const digitalSignage =
+                    config.digital_signage || {};
+
+                document.getElementById(
+                    "digital-signage-enabled"
+                ).checked =
+                    digitalSignage.enabled !== false;
+
+                document.getElementById(
+                    "ad-start-delay"
+                ).value =
+                    digitalSignage.start_delay ?? 60;
+
+                document.getElementById(
+                    "ad-slide-interval"
+                ).value =
+                    digitalSignage.slide_interval ?? 20;
+
+                renderAds(
+                    digitalSignage.ads || []
+                );
 
                 if (config.logo) {
                     // Store logo
@@ -992,6 +1433,33 @@
 
                 logo: currentConfig.logo,
                 display_theme: document.getElementById("display-theme").value,
+                digital_signage: {
+
+                    enabled:
+                        document.getElementById(
+                            "digital-signage-enabled"
+                        ).checked,
+
+                    start_delay:
+                        parseInt(
+                            document.getElementById(
+                                "ad-start-delay"
+                            ).value,
+                            10
+                        ) || 60,
+
+                    slide_interval:
+                        parseInt(
+                            document.getElementById(
+                                "ad-slide-interval"
+                            ).value,
+                            10
+                        ) || 20,
+
+                    ads:
+                        currentConfig.digital_signage?.ads || []
+
+                },
                 messages: {
 
                     welcome:
@@ -1155,7 +1623,7 @@
 
 
         loadSettings();
-
+        loadAds();
     </script>
 
 </body>
