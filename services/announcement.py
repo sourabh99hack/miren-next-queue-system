@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import threading
+import platform
 
 
 class AnnouncementService:
@@ -24,6 +25,29 @@ class AnnouncementService:
 
                 self.current_process = None
 
+    def get_audio_player(self):
+
+        system = platform.system()
+
+        # macOS
+        if system == "Darwin":
+            if shutil.which("afplay"):
+                return ["afplay"]
+
+        # Linux / Raspberry Pi
+        elif system == "Linux":
+            if shutil.which("pw-play"):
+                return ["pw-play"]
+
+            # Fallback
+            if shutil.which("paplay"):
+                return ["paplay"]
+
+            if shutil.which("cvlc"):
+                return ["cvlc", "--play-and-exit"]
+
+        return None
+
     def announce_register(self, register):
 
         # Stop any previous announcement
@@ -35,6 +59,10 @@ class AnnouncementService:
             )
         )
 
+        # =========================================
+        # CUSTOM AUDIO
+        # =========================================
+
         if audio_filename:
 
             audio_path = os.path.join(
@@ -44,16 +72,31 @@ class AnnouncementService:
 
             if os.path.exists(audio_path):
 
-                if shutil.which("afplay"):
+                player = self.get_audio_player()
+
+                if player:
+
+                    command = player + [audio_path]
+
+                    print(
+                        f"Playing announcement: {' '.join(command)}"
+                    )
 
                     with self.process_lock:
-                        self.current_process = subprocess.Popen(
-                            ["afplay", audio_path]
+                        self.current_process = (
+                            subprocess.Popen(command)
                         )
 
                     return
 
-        # No custom audio → configured TTS
+                print(
+                    "No supported audio player found."
+                )
+
+        # =========================================
+        # FALLBACK TTS
+        # =========================================
+
         proceed_message = (
             self.config_manager.get_message(
                 "proceed"
@@ -73,9 +116,40 @@ class AnnouncementService:
                 f"Please proceed to register {register}"
             )
 
-        if shutil.which("say"):
+        system = platform.system()
 
-            with self.process_lock:
-                self.current_process = subprocess.Popen(
-                    ["say", message]
-                )
+        # macOS TTS
+        if system == "Darwin":
+
+            if shutil.which("say"):
+
+                print(f"Speaking: {message}")
+
+                with self.process_lock:
+                    self.current_process = (
+                        subprocess.Popen(
+                            ["say", message]
+                        )
+                    )
+
+                return
+
+        # Linux / Raspberry Pi TTS
+        elif system == "Linux":
+
+            if shutil.which("espeak-ng"):
+
+                print(f"Speaking: {message}")
+
+                with self.process_lock:
+                    self.current_process = (
+                        subprocess.Popen(
+                            ["espeak-ng", message]
+                        )
+                    )
+
+                return
+
+        print(
+            "No supported TTS engine found."
+        )
