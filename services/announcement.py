@@ -31,11 +31,13 @@ class AnnouncementService:
 
         # macOS
         if system == "Darwin":
+
             if shutil.which("afplay"):
                 return ["afplay"]
 
         # Linux / Raspberry Pi
         elif system == "Linux":
+
             if shutil.which("pw-play"):
                 return ["pw-play"]
 
@@ -47,6 +49,16 @@ class AnnouncementService:
                 return ["cvlc", "--play-and-exit"]
 
         return None
+
+    def get_audio_environment(self):
+
+        env = os.environ.copy()
+
+        # Raspberry Pi / Linux PipeWire
+        if platform.system() == "Linux":
+            env["XDG_RUNTIME_DIR"] = "/run/user/1000"
+
+        return env
 
     def announce_register(self, register):
 
@@ -82,9 +94,14 @@ class AnnouncementService:
                         f"Playing announcement: {' '.join(command)}"
                     )
 
+                    env = self.get_audio_environment()
+
                     with self.process_lock:
                         self.current_process = (
-                            subprocess.Popen(command)
+                            subprocess.Popen(
+                                command,
+                                env=env
+                            )
                         )
 
                     return
@@ -118,7 +135,10 @@ class AnnouncementService:
 
         system = platform.system()
 
+        # =========================================
         # macOS TTS
+        # =========================================
+
         if system == "Darwin":
 
             if shutil.which("say"):
@@ -134,17 +154,23 @@ class AnnouncementService:
 
                 return
 
+        # =========================================
         # Linux / Raspberry Pi TTS
+        # =========================================
+
         elif system == "Linux":
 
             if shutil.which("espeak-ng"):
 
                 print(f"Speaking: {message}")
 
+                env = self.get_audio_environment()
+
                 with self.process_lock:
                     self.current_process = (
                         subprocess.Popen(
-                            ["espeak-ng", message]
+                            ["espeak-ng", message],
+                            env=env
                         )
                     )
 
