@@ -5,159 +5,465 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>MiRen Next</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
 
 </head>
 
+
 <body>
 
-    <div class="display-container">
+<div class="display-container">
 
 
-        <!-- ================================= -->
-        <!-- IDLE SCREEN                        -->
-        <!-- ================================= -->
+    <!-- =====================================================
+         WAITING SCREEN
+         ===================================================== -->
 
-        <div id="idle-screen">
+    <div
+        id="idle-screen"
+        class="display-state"
+    >
 
-            <img id="store-logo-idle" class="store-logo" src="" alt="Store Logo">
+        <img
+            id="store-logo-idle"
+            class="store-logo"
+            src=""
+            alt="Store Logo"
+        >
 
-            <div id="store-name-idle" class="store-name">
-                MiRen Next
+
+        <div
+            id="store-name-idle"
+            class="store-name"
+        >
+            MiRen Next
+        </div>
+
+
+        <div
+            id="welcome-message"
+            class="welcome"
+        >
+            WELCOME TO MiRen Next
+        </div>
+
+
+        <div
+            id="idle-next-cashier"
+            class="next-cashier"
+        >
+            NEXT CASHIER
+        </div>
+
+
+        <div
+            id="idle-wait-message"
+            class="wait-message"
+        >
+            PLEASE WAIT FOR THE NEXT AVAILABLE REGISTER
+        </div>
+
+
+        <div class="customer-flow">
+
+            <div class="flow-item">
+
+                <div class="flow-icon">
+                    🛍
+                </div>
+
+                <div class="flow-title">
+                    SHOP
+                </div>
+
+                <div class="flow-description">
+                    Pick your items
+                </div>
+
             </div>
 
-            <div id="welcome-message" class="welcome">
-                WELCOME TO MiRen Next
+
+            <div class="flow-arrow">
+                →
             </div>
 
-            <div id="idle-next-cashier" class="next-cashier">
-                NEXT CASHIER
+
+            <div class="flow-item">
+
+                <div class="flow-icon">
+                    👥
+                </div>
+
+                <div class="flow-title">
+                    WAIT
+                </div>
+
+                <div class="flow-description">
+                    For your number
+                </div>
+
             </div>
 
-            <div id="idle-wait-message" class="wait-message">
-                PLEASE WAIT FOR THE NEXT AVAILABLE REGISTER
+
+            <div class="flow-arrow">
+                →
             </div>
 
-            <div id="idle-thank-you" class="thank-you">
-                THANK YOU
+
+            <div class="flow-item checkout-flow">
+
+                <div class="flow-icon">
+                    ▤
+                </div>
+
+                <div class="flow-title">
+                    CHECKOUT
+                </div>
+
+                <div class="flow-description">
+                    When called
+                </div>
+
             </div>
 
         </div>
 
 
-        <!-- ================================= -->
-        <!-- CALL SCREEN                        -->
-        <!-- ================================= -->
-
-        <div id="call-screen" class="hidden">
-
-            <img id="store-logo-call" class="store-logo" src="" alt="Store Logo">
-
-            <div id="store-name-call" class="store-name">
-                MiRen Next
-            </div>
-
-            <div id="call-next-cashier" class="next-cashier">
-                NEXT CASHIER
-            </div>
-
-            <div id="proceed-message" class="proceed-message">
-                PLEASE PROCEED TO
-            </div>
-
-            <div id="register-box" class="register-box">
-                REGISTER 1 →
-            </div>
-
-            <div id="timer" class="timer">
-                8
-            </div>
-
-            <div id="call-thank-you" class="thank-you">
-                THANK YOU
-            </div>
-
+        <div
+            id="idle-thank-you"
+            class="thank-you idle-thank-you"
+        >
+            THANK YOU
         </div>
-
-
-        <!-- ================================= -->
-        <!-- QUEUE SCREEN                       -->
-        <!-- ================================= -->
-
-        <div id="queue-screen" class="hidden">
-
-            <img id="store-logo-queue" class="store-logo" src="" alt="Store Logo">
-
-            <div id="store-name-queue" class="store-name">
-                MiRen Next
-            </div>
-
-            <div id="now-calling" class="now-calling">
-                NOW CALLING
-            </div>
-
-            <div id="queue-current" class="register-box">
-                REGISTER 1
-            </div>
-
-            <div id="next-register" class="next-box">
-                NEXT: REGISTER 2
-            </div>
-
-            <div id="queue-timer" class="timer">
-                8
-            </div>
-
-            <div id="queue-message" class="queue-message">
-                PLEASE PROCEED WHEN READY
-            </div>
-
-        </div>
-
-        <!-- ================================= -->
-        <!-- DIGITAL SIGNAGE / AD SCREEN        -->
-        <!-- ================================= -->
-
-        <div id="ad-screen" class="hidden">
-
-            <img id="ad-image" src="" alt="Advertisement">
-
-        </div>
-
-        <!-- ================================= -->
-        <!-- PRODUCT BRANDING                   -->
-        <!-- ================================= -->
-
-        <div class="product-branding">
-
-            <span class="product-name">
-                MiRen Next
-            </span>
-
-            <span class="branding-separator">
-                •
-            </span>
-
-            <span class="powered-by">
-                Powered by Suntech
-            </span>
-
-            <div class="copyright">
-                © 2026 Suntech. All rights reserved.
-            </div>
-
-
-        </div>
-
 
     </div>
 
 
-    <script src="{{ url_for('static', filename='js/display.js') }}"></script>
+
+    <!-- =====================================================
+         SINGLE REGISTER CALL
+         ===================================================== -->
+
+    <div
+        id="call-screen"
+        class="display-state hidden"
+    >
+
+        <img
+            id="store-logo-call"
+            class="store-logo"
+            src=""
+            alt="Store Logo"
+        >
+
+
+        <div
+            id="store-name-call"
+            class="store-name"
+        >
+            MiRen Next
+        </div>
+
+
+        <div
+            id="call-next-cashier"
+            class="next-cashier active-heading"
+        >
+            NEXT CASHIER
+        </div>
+
+
+        <div
+            id="proceed-message"
+            class="proceed-message"
+        >
+            PLEASE PROCEED TO
+        </div>
+
+
+        <!--
+            IMPORTANT:
+            Only the register name is displayed.
+            We DO NOT display the number separately.
+        -->
+
+        <div
+            id="register-box"
+            class="register-box"
+        >
+
+            <!-- <div class="register-icon">
+                ▤
+            </div> -->
+
+
+            <div
+                id="register-name"
+                class="register-name"
+            >
+                Checkout Counter 1
+            </div>
+
+        </div>
+
+
+        <div class="timer-row">
+
+            <div
+                id="timer"
+                class="timer"
+            >
+                8
+            </div>
+
+            <span class="timer-label">
+                sec
+            </span>
+
+        </div>
+
+
+        <div
+            id="call-thank-you"
+            class="thank-you call-thank-you"
+        >
+            THANK YOU
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         QUEUE SCREEN
+         ===================================================== -->
+
+    <div
+        id="queue-screen"
+        class="display-state queue-display hidden"
+    >
+
+
+        <!-- =================================================
+             CURRENT REGISTER
+             ================================================= -->
+
+        <div class="queue-main">
+
+
+            <img
+                id="store-logo-queue"
+                class="store-logo queue-logo"
+                src=""
+                alt="Store Logo"
+            >
+
+
+            <div
+                id="store-name-queue"
+                class="store-name"
+            >
+                MiRen Next
+            </div>
+
+
+            <div
+                id="now-calling"
+                class="now-calling"
+            >
+                NOW CALLING
+            </div>
+
+
+            <div
+                id="queue-proceed-message"
+                class="queue-proceed-message"
+            >
+                PLEASE PROCEED TO
+            </div>
+
+
+            <!--
+                Only register name.
+                No separate large register number.
+            -->
+
+            <div
+                id="queue-current"
+                class="register-box queue-register-box"
+            >
+
+                <!-- <div class="register-icon">
+                    ▤
+                </div> -->
+
+
+                <div
+                    id="queue-current-name"
+                    class="register-name"
+                >
+                    Checkout Counter 1
+                </div>
+
+            </div>
+
+
+            <div class="queue-bottom-row">
+
+
+                <div
+                    id="queue-message"
+                    class="queue-message"
+                >
+                    PLEASE PROCEED WHEN READY
+                </div>
+
+
+                <div class="timer-row queue-timer-row">
+
+                    <div
+                        id="queue-timer"
+                        class="timer"
+                    >
+                        8
+                    </div>
+
+                    <span class="timer-label">
+                        sec
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             NEXT IN QUEUE
+             ================================================= -->
+
+        <div
+            id="queue-side-panel"
+            class="queue-side-panel"
+        >
+
+            <div class="queue-side-title">
+                NEXT IN QUEUE
+            </div>
+
+
+            <!-- ONLY NUMBER -->
+            <div
+                id="queue-count"
+                class="queue-count"
+            >
+                0
+            </div>
+
+
+            <div class="queue-divider"></div>
+
+
+            <div class="queue-next-label">
+                QUEUING NEXT
+            </div>
+
+
+            <div
+                id="queue-list"
+                class="queue-list"
+            >
+                <!-- Generated by JavaScript -->
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         DIGITAL SIGNAGE
+         ===================================================== -->
+
+    <div
+        id="ad-screen"
+        class="hidden"
+    >
+
+        <div class="ad-track">
+
+            <img
+                id="ad-image-current"
+                class="ad-image ad-image-current"
+                src=""
+                alt="Advertisement"
+            >
+
+
+            <img
+                id="ad-image-next"
+                class="ad-image ad-image-next"
+                src=""
+                alt="Advertisement"
+            >
+
+        </div>
+
+
+        <div
+            id="ad-progress"
+            class="ad-progress"
+        >
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         PRODUCT BRANDING
+         ===================================================== -->
+
+    <div class="product-branding">
+
+        <span class="product-name">
+            MiRen Next
+        </span>
+
+        <span class="branding-separator">
+            •
+        </span>
+
+        <span class="powered-by">
+            Powered by Suntech
+        </span>
+
+        <div class="copyright">
+            © 2026 Suntech. All rights reserved.
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script
+    src="{{ url_for('static', filename='js/display.js') }}"
+></script>
 
 </body>
 

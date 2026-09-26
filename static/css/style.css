@@ -1,580 +1,1713 @@
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
 * {
     box-sizing: border-box;
 }
 
-/* Display Themes */
 
+html,
+body {
 
-/* body {
+    width: 100%;
+    height: 100%;
+
     margin: 0;
     padding: 0;
 
-    background: #050909;
+}
 
-    color: white;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-} */
 
 body {
-    --display-background: #ffffff;
-    --display-text: #111111;
-    --display-secondary-text: #666666;
+
+    --display-text: #111827;
+    --display-secondary-text: #64748b;
 
     margin: 0;
     padding: 0;
-
-    background: var(--display-background);
-    color: var(--display-text);
 
     font-family:
         Arial,
         Helvetica,
         sans-serif;
-}
-
-body[data-theme="dark"] {
-    --display-background: #111111;
-    --display-text: #ffffff;
-    --display-secondary-text: #cccccc;
-}
-
-body[data-theme="light"] {
-    --display-background: #ffffff;
-    --display-text: #111111;
-    --display-secondary-text: #666666;
-}
-
-.store-name {
-    font-size: 32px;
-    font-weight: bold;
-    margin-bottom: 25px;
-    letter-spacing: 1px;
-}
-
-/* .display-container {
-    width: 100vw;
-    height: 100vh;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    text-align: center;
-
-    padding: 40px;
-    background: var(--display-background);
-    color: var(--display-text);
-} */
-
-.display-container {
-    width: 100vw;
-    height: 100vh;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    text-align: center;
-
-    padding: 3vh 4vw;
-
-    background: var(--display-background);
-    color: var(--display-text);
 
     overflow: hidden;
+
+    background: #f7f8ff;
+
+    color: var(--display-text);
+
 }
 
 
-.hidden {
-    display: none !important;
+/* =========================================================
+   LIGHT THEME
+   ========================================================= */
+
+body[data-theme="light"] {
+
+    background: #f7f8ff;
+
+    --display-text: #111827;
+
+    --display-secondary-text: #64748b;
+
 }
 
-/* =========================
-   DISPLAY SCREEN LAYOUT
-   ========================= */
 
-#idle-screen,
-#call-screen,
-#queue-screen {
-    width: 90vw;
-    min-height: 82vh;
+/* =========================================================
+   DARK THEME
+   ========================================================= */
+
+body[data-theme="dark"] {
+
+    background: #07100c;
+
+    --display-text: #ffffff;
+
+    --display-secondary-text: #cbd5d1;
+
+}
+
+
+/* =========================================================
+   MAIN DISPLAY
+   ========================================================= */
+
+.display-container {
+
+    position: relative;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
 
     display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background:
+
+        radial-gradient(
+            circle at 8% 12%,
+            rgba(124, 92, 255, 0.13),
+            transparent 25%
+        ),
+
+        radial-gradient(
+            circle at 92% 18%,
+            rgba(59, 130, 246, 0.10),
+            transparent 24%
+        ),
+
+        radial-gradient(
+            circle at 55% 88%,
+            rgba(16, 185, 129, 0.08),
+            transparent 25%
+        ),
+
+        linear-gradient(
+            135deg,
+            #f7f8ff 0%,
+            #ffffff 50%,
+            #f3f6ff 100%
+        );
+
+}
+
+
+/* =========================================================
+   DARK BACKGROUND
+   ========================================================= */
+
+body[data-theme="dark"] .display-container {
+
+    background:
+
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(16, 185, 129, 0.15),
+            transparent 30%
+        ),
+
+        radial-gradient(
+            circle at 85% 80%,
+            rgba(34, 197, 94, 0.10),
+            transparent 28%
+        ),
+
+        linear-gradient(
+            135deg,
+            #07110d,
+            #0b1712,
+            #08110d
+        );
+
+}
+
+
+/* =========================================================
+   LIGHT MODE MOVING ORBS
+   ========================================================= */
+
+.display-container::before,
+.display-container::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 35vw;
+    height: 35vw;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    filter: blur(75px);
+
+    opacity: 0.18;
+
+    z-index: 0;
+
+    animation:
+        backgroundFloat
+        15s
+        ease-in-out
+        infinite
+        alternate;
+
+}
+
+
+.display-container::before {
+
+    top: -12vw;
+    left: -8vw;
+
+    background:
+        rgba(124, 92, 255, 0.30);
+
+}
+
+
+.display-container::after {
+
+    right: -10vw;
+    bottom: -14vw;
+
+    background:
+        rgba(59, 130, 246, 0.22);
+
+    animation-delay: -7s;
+
+}
+
+
+@keyframes backgroundFloat {
+
+    0% {
+
+        transform:
+            translate(0, 0)
+            scale(1);
+
+    }
+
+    50% {
+
+        transform:
+            translate(4vw, 3vh)
+            scale(1.12);
+
+    }
+
+    100% {
+
+        transform:
+            translate(-3vw, 4vh)
+            scale(0.97);
+
+    }
+
+}
+
+
+/* =========================================================
+   HIDDEN
+   ========================================================= */
+
+.hidden {
+
+    display: none !important;
+
+}
+
+
+/* =========================================================
+   GENERAL DISPLAY STATE
+   ========================================================= */
+
+.display-state {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: min(94vw, 1900px);
+
+    height: min(90vh, 980px);
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.store-logo {
+
+    width: auto;
+
+    max-width: clamp(
+        180px,
+        18vw,
+        380px
+    );
+
+    max-height: clamp(
+        100px,
+        18vh,
+        210px
+    );
+
+    object-fit: contain;
+
+    margin-bottom: 1.2vh;
+
+    filter:
+        drop-shadow(
+            0 8px 20px
+            rgba(0, 0, 0, 0.10)
+        );
+
+}
+
+
+/* =========================================================
+   STORE NAME
+   ========================================================= */
+
+.store-name {
+
+    font-size:
+        clamp(
+            24px,
+            2.3vw,
+            44px
+        );
+
+    font-weight: 800;
+
+    margin-bottom: 1vh;
+
+}
+
+
+/* =========================================================
+   WAITING SCREEN
+   ========================================================= */
+
+.welcome {
+
+    font-size:
+        clamp(
+            42px,
+            5vw,
+            90px
+        );
+
+    line-height: 1.05;
+
+    font-weight: 800;
+
+    margin-bottom: 2vh;
+
+}
+
+
+.next-cashier {
+
+    font-size:
+        clamp(
+            34px,
+            4vw,
+            70px
+        );
+
+    font-weight: 800;
+
+    color: #735cff;
+
+    margin-bottom: 0.5vh;
+
+}
+
+
+.wait-message {
+
+    font-size:
+        clamp(
+            22px,
+            2vw,
+            38px
+        );
+
+    color:
+        var(--display-secondary-text);
+
+    margin-bottom: 2vh;
+
+}
+
+
+/* =========================================================
+   CUSTOMER FLOW
+   ========================================================= */
+
+.customer-flow {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap:
+        clamp(
+            20px,
+            3.5vw,
+            80px
+        );
+
+    margin-top: 1vh;
+
+}
+
+
+.flow-item {
+
+    min-width:
+        clamp(
+            100px,
+            10vw,
+            190px
+        );
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+}
+
+
+.flow-icon {
+
+    width:
+        clamp(
+            60px,
+            4.5vw,
+            90px
+        );
+
+    height:
+        clamp(
+            60px,
+            4.5vw,
+            90px
+        );
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 20px;
+
+    background:
+        rgba(255, 255, 255, 0.86);
+
+    box-shadow:
+        0 10px 30px
+        rgba(15, 23, 42, 0.08);
+
+    font-size:
+        clamp(
+            25px,
+            2.2vw,
+            40px
+        );
+
+}
+
+
+.flow-title {
+
+    margin-top: 0.7vh;
+
+    font-size:
+        clamp(
+            18px,
+            1.5vw,
+            28px
+        );
+
+    font-weight: 800;
+
+}
+
+
+.flow-description {
+
+    margin-top: 4px;
+
+    font-size:
+        clamp(
+            12px,
+            1vw,
+            18px
+        );
+
+    color:
+        var(--display-secondary-text);
+
+}
+
+
+.flow-arrow {
+
+    font-size:
+        clamp(
+            25px,
+            2.5vw,
+            50px
+        );
+
+    color: #94a3b8;
+
+}
+
+
+/* =========================================================
+   THANK YOU
+   ========================================================= */
+
+.thank-you {
+
+    font-size:
+        clamp(
+            18px,
+            1.5vw,
+            30px
+        );
+
+    color:
+        var(--display-secondary-text);
+
+    font-weight: 500;
+
+}
+
+
+.idle-thank-you {
+
+    margin-top: 2vh;
+
+}
+
+
+/* =========================================================
+   ACTIVE GREEN SCREEN
+   ========================================================= */
+
+body.call-active .display-container {
+
+    background:
+
+        radial-gradient(
+            circle at 50% 48%,
+            rgba(255, 255, 255, 0.12),
+            transparent 36%
+        ),
+
+        linear-gradient(
+            135deg,
+            #16d34a,
+            #05c46a,
+            #10b981
+        );
+
+}
+
+
+/* =========================================================
+   CALL SCREEN
+   ========================================================= */
+
+#call-screen {
+
+    color: #ffffff;
+
+}
+
+
+.active-heading {
+
+    color: #ffffff;
+
+}
+
+
+.proceed-message {
+
+    font-size:
+        clamp(
+            28px,
+            3vw,
+            52px
+        );
+
+    color: #ffffff;
+
+    margin-bottom: 1vh;
+
+}
+
+
+/* =========================================================
+   REGISTER BOX
+   ========================================================= */
+
+.register-box {
+
+    width:
+        min(
+            86vw,
+            1650px
+        );
+
+    height:
+        clamp(
+            250px,
+            32vh,
+            400px
+        );
+
+    display: flex;
+
     flex-direction: column;
 
     justify-content: center;
     align-items: center;
 
-    text-align: center;
-
-    gap: 1.2vh;
-}
-
-/* =========================
-   IDLE SCREEN
-   ========================= */
-
-.welcome {
-    font-size: 70px;
-
-    font-weight: bold;
-
-    margin-bottom: 50px;
-}
-
-
-.next-cashier {
-    font-size: clamp(42px, 4.5vw, 82px);
-
-    font-weight: bold;
-
-    margin-bottom: 1vh;
-
-    letter-spacing: 1px;
-}
-
-
-.wait-message {
-    font-size: 32px;
-
-    margin-bottom: 50px;
-}
-
-
-.thank-you {
-    font-size: clamp(22px, 2vw, 40px);
-
-    margin-top: 1vh;
-}
-
-
-/* =========================
-   CURRENT REGISTER
-   ========================= */
-
-.proceed-message {
-    font-size: clamp(28px, 2.8vw, 52px);
-
-    margin-bottom: 0.5vh;
-}
-
-
-.register-box {
-    display: flex;
-
-    width: min(82vw, 1500px);
-
-    min-height: 12vh;
-
-    justify-content: center;
-    align-items: center;
-
-    background: #16d34a;
-
-    color: black;
-
-    font-size: clamp(48px, 6vw, 110px);
-
-    font-weight: bold;
-
-    padding: 2vh 3vw;
+    padding: 3vh 3vw;
 
     margin: 1vh 0;
 
-    border-radius: 16px;
+    border-radius: 28px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    color: #ffffff;
+
+    background:
+
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(255,255,255,0.12),
+            transparent 45%
+        ),
+
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.15),
+            rgba(255,255,255,0.05)
+        );
+
+    border:
+        2px solid
+        rgba(255,255,255,0.45);
 
     box-shadow:
-        0 0 25px rgba(22, 211, 74, 0.5);
+        0 20px 60px
+        rgba(0, 100, 60, 0.20);
 
-    text-align: center;
-
-    line-height: 1.1;
 }
 
 
-/* =========================
-   TIMER
-   ========================= */
+/* =========================================================
+   REGISTER RAYS
+   ========================================================= */
 
-.timer {
-    margin-top: 1vh;
+.register-box::before {
 
-    font-size: clamp(38px, 4vw, 72px);
+    content: "";
 
-    font-weight: bold;
+    position: absolute;
 
-    line-height: 1;
+    inset: -60%;
+
+    background:
+
+        repeating-conic-gradient(
+            from 0deg,
+            rgba(255,255,255,0.055)
+            0deg 10deg,
+            transparent
+            10deg 24deg
+        );
+
+    animation:
+        raysRotate
+        18s
+        linear
+        infinite;
+
 }
 
 
-.timer::after {
-    content: " seconds";
+@keyframes raysRotate {
 
-    font-size: 0.4em;
+    to {
 
-    font-weight: normal;
+        transform:
+            rotate(360deg);
+
+    }
+
 }
 
-/* =========================
-   QUEUE MODE
-   ========================= */
 
-.now-calling {
-    font-size: clamp(42px, 4.5vw, 82px);
+/* =========================================================
+   REGISTER ICON
+   ========================================================= */
 
-    font-weight: bold;
+.register-icon {
+
+    position: relative;
+
+    z-index: 2;
+
+    font-size:
+        clamp(
+            30px,
+            3vw,
+            55px
+        );
 
     margin-bottom: 1vh;
+
 }
 
 
-.next-box {
+/* =========================================================
+   REGISTER NAME
+   ========================================================= */
+
+.register-name {
+
+    position: relative;
+
+    z-index: 2;
+
+    font-size:
+        clamp(
+            42px,
+            5vw,
+            92px
+        );
+
+    font-weight: 800;
+
+    line-height: 1.05;
+
+}
+
+
+/*
+    IMPORTANT:
+    There is NO separate register number anymore.
+*/
+
+
+/* =========================================================
+   TIMER
+   ========================================================= */
+
+.timer-row {
+
     display: flex;
 
-    width: min(75vw, 1300px);
-
     justify-content: center;
-    align-items: center;
 
-    margin: 1vh auto 0;
+    align-items: baseline;
 
-    background: #2563eb;
+    gap: 7px;
 
-    color: white;
+    color: #ffffff;
 
-    font-size: clamp(32px, 4vw, 70px);
-
-    font-weight: bold;
-
-    padding: 2vh 3vw;
-
-    border-radius: 14px;
-
-    text-align: center;
 }
 
 
-.queue-message {
-    font-size: clamp(24px, 2.5vw, 46px);
+.timer {
+
+    font-size:
+        clamp(
+            42px,
+            4vw,
+            75px
+        );
+
+    font-weight: 900;
+
+    line-height: 1;
+
+}
+
+
+.timer-label {
+
+    font-size:
+        clamp(
+            18px,
+            1.4vw,
+            27px
+        );
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   CALL THANK YOU
+   ========================================================= */
+
+.call-thank-you {
+
+    color:
+        rgba(255,255,255,0.78);
 
     margin-top: 1vh;
+
 }
 
 
-/* =========================
-   RESPONSIVE
-   ========================= */
+/* =========================================================
+   REGISTER POP
+   ========================================================= */
 
-@media (max-width: 900px) {
+.register-pop {
 
-    #idle-screen,
-    #call-screen,
-    #queue-screen {
-        width: 92vw;
-        min-height: 80vh;
+    animation:
+        registerPop
+        0.7s
+        cubic-bezier(
+            0.16,
+            1,
+            0.3,
+            1
+        )
+        both;
 
-        gap: 1vh;
-    }
-
-    .store-logo {
-        max-width: 45vw;
-        max-height: 16vh;
-    }
-
-    .register-box {
-        width: 90vw;
-
-        font-size: clamp(38px, 6vw, 65px);
-
-        padding: 2vh 3vw;
-
-        white-space: normal;
-    }
-
-    .next-box {
-        width: 88vw;
-
-        font-size: clamp(28px, 4vw, 50px);
-    }
 }
 
 
-/* =========================
-   MOBILE
-   ========================= */
+@keyframes registerPop {
 
-@media (max-width: 600px) {
+    0% {
 
-    .display-container {
-        padding: 20px;
+        opacity: 0;
+
+        transform:
+            scale(0.88)
+            translateY(20px);
+
     }
 
+    70% {
 
-    .welcome {
-        font-size: 38px;
+        opacity: 1;
+
+        transform:
+            scale(1.02);
+
     }
 
+    100% {
 
-    .next-cashier {
-        font-size: 32px;
-    }
+        opacity: 1;
 
+        transform:
+            scale(1);
 
-    .wait-message {
-        font-size: 20px;
-    }
-
-
-    .proceed-message {
-        font-size: 22px;
-    }
-
-
-    .register-box {
-        font-size: 38px;
-
-        padding: 18px 25px;
-    }
-
-
-    .timer {
-        font-size: 40px;
-    }
-
-
-    .timer::after {
-        font-size: 20px;
-    }
-
-
-    .now-calling {
-        font-size: 32px;
-    }
-
-
-    .next-box {
-        font-size: 28px;
-
-        padding: 15px 25px;
-    }
-
-
-    .queue-message {
-        font-size: 22px;
     }
 
 }
 
-.store-logo {
-    width: auto;
-    max-width: 32vw;
-    max-height: 20vh;
-    object-fit: contain;
-    margin: 0 auto 1vh;
-    display: block;
-}
 
-/* Footer Personal branding */
+/* =========================================================
+   QUEUE SCREEN
+   ========================================================= */
 
-.product-branding {
-    position: fixed;
+.queue-display {
 
-    bottom: 15px;
-    left: 0;
-    right: 0;
+    width: 94vw;
 
-    text-align: center;
+    max-width: 1900px;
 
-    font-size: 14px;
-
-    opacity: 0.65;
-
-    letter-spacing: 0.5px;
-}
-
-.product-branding .product-name {
-    font-weight: bold;
-}
-
-.product-branding .branding-separator {
-    margin: 0 6px;
-    opacity: 0.7;
-}
-
-.product-branding .powered-by {
-    font-weight: normal;
-}
-
-.product-branding .copyright {
-    margin-top: 4px;
-    font-size: 11px;
-    opacity: 0.7;
-}
-
-
-
-/* simulator css */
-
-.simulator {
-    max-width: 1000px;
-
-    margin: 0 auto;
-
-    padding: 50px;
-
-    text-align: center;
-}
-
-
-.simulator h1 {
-    font-size: 50px;
-}
-
-
-.simulator p {
-    font-size: 22px;
-}
-
-
-.register-buttons {
+    height: 88vh;
 
     display: grid;
 
     grid-template-columns:
-        repeat(2, 1fr);
+        minmax(0, 1fr)
+        clamp(300px, 24vw, 430px);
 
-    gap: 25px;
+    gap:
+        clamp(
+            20px,
+            2.5vw,
+            50px
+        );
 
-    margin-top: 40px;
-}
-
-
-.register-buttons button {
-
-    padding: 35px;
-
-    border: none;
-
-    border-radius: 15px;
-
-    background: #09b83e;
-
-    color: white;
-
-    font-size: 28px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-}
-
-
-.register-buttons button:hover {
-
-    background: #0bd94b;
+    align-items: center;
 
 }
 
 
-.register-buttons span {
+/* =========================================================
+   QUEUE MAIN
+   ========================================================= */
 
-    display: block;
+.queue-main {
 
-    margin-top: 10px;
+    min-width: 0;
 
-    font-size: 16px;
+    width: 100%;
+
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
 }
 
 
-.simulator-actions {
+.queue-logo {
+
+    max-height: 12vh;
+
+}
+
+
+.now-calling {
+
+    font-size:
+        clamp(
+            36px,
+            3.7vw,
+            68px
+        );
+
+    font-weight: 800;
+
+    color: #ffffff;
+
+    margin-bottom: 0.5vh;
+
+}
+
+
+.queue-proceed-message {
+
+    font-size:
+        clamp(
+            23px,
+            2.5vw,
+            45px
+        );
+
+    color: #ffffff;
+
+    margin-bottom: 1vh;
+
+}
+
+
+/* =========================================================
+   QUEUE REGISTER
+   ========================================================= */
+
+.queue-register-box {
+
+    width: 100%;
+
+    height:
+        clamp(
+            260px,
+            34vh,
+            390px
+        );
+
+    margin: 1vh 0;
+
+}
+
+
+.queue-bottom-row {
 
     display: flex;
 
     justify-content: center;
 
-    gap: 20px;
+    align-items: center;
 
-    margin-top: 40px;
-}
+    gap:
+        clamp(
+            15px,
+            2vw,
+            35px
+        );
 
-
-.simulator-actions button {
-
-    padding: 15px 30px;
-
-    border: 2px solid white;
-
-    border-radius: 10px;
-
-    background: transparent;
-
-    color: white;
-
-    font-size: 18px;
-
-    cursor: pointer;
-}
-
-
-#status {
-
-    margin-top: 40px;
-
-    padding: 20px;
-
-    border: 1px solid #555;
-
-    border-radius: 10px;
-
-    font-size: 20px;
-}
-
-
-@media (max-width: 700px) {
-
-    .register-buttons {
-
-        grid-template-columns: 1fr;
-
-    }
+    margin-top: 1vh;
 
 }
 
 
-/* =========================
-   DIGITAL SIGNAGE / ADS
-   ========================= */
+.queue-message {
 
-#ad-screen {
-    position: fixed;
+    font-size:
+        clamp(
+            20px,
+            1.8vw,
+            34px
+        );
 
-    top: 0;
-    left: 0;
+    color: #ffffff;
 
-    width: 100vw;
-    height: 100vh;
+}
 
-    background: #000;
+
+.queue-timer-row {
+
+    padding:
+        1.2vh 1.7vw;
+
+    border-radius: 16px;
+
+    background:
+        rgba(0, 100, 60, 0.20);
+
+}
+
+
+/* =========================================================
+   NEXT IN QUEUE PANEL
+   ========================================================= */
+
+.queue-side-panel {
+
+    width: 100%;
+
+    height:
+        clamp(
+            480px,
+            68vh,
+            720px
+        );
+
+    padding:
+        clamp(
+            25px,
+            3vh,
+            45px
+        )
+        clamp(
+            20px,
+            1.5vw,
+            30px
+        );
+
+    border-radius: 28px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    color: #ffffff;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            #5149db,
+            #2867d8
+        );
+
+    border:
+        1px solid
+        rgba(255,255,255,0.35);
+
+    box-shadow:
+        0 20px 60px
+        rgba(37,99,235,0.25);
+
+}
+
+
+/* =========================================================
+   NEXT IN QUEUE TITLE
+   ========================================================= */
+
+.queue-side-title {
+
+    font-size:
+        clamp(
+            22px,
+            1.9vw,
+            34px
+        );
+
+    font-weight: 900;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   QUEUE COUNT
+   ========================================================= */
+
+.queue-count {
+
+    font-size:
+        clamp(
+            58px,
+            5vw,
+            92px
+        );
+
+    font-weight: 900;
+
+    line-height: 1;
+
+    margin-top: 2vh;
+
+}
+
+
+/* =========================================================
+   REMOVE CUSTOMER WAITING TEXT
+   ========================================================= */
+
+.queue-count-label {
+
+    display: none !important;
+
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.queue-divider {
+
+    width: 88%;
+
+    height: 1px;
+
+    margin:
+        2.5vh 0
+        2vh;
+
+    background:
+        rgba(255,255,255,0.30);
+
+}
+
+
+/* =========================================================
+   QUEUING NEXT
+   ========================================================= */
+
+.queue-next-label {
+
+    font-size:
+        clamp(
+            14px,
+            1vw,
+            20px
+        );
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    opacity: 0.85;
+
+    margin-bottom: 1.5vh;
+
+}
+
+
+/* =========================================================
+   QUEUE LIST
+   ========================================================= */
+
+.queue-list {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    overflow: hidden;
+
+}
+
+
+.queue-item {
+
+    width: 100%;
+
+    min-height:
+        clamp(
+            56px,
+            6vh,
+            75px
+        );
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        8px 12px;
+
+    border-radius: 15px;
+
+    background:
+        rgba(255,255,255,0.15);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.20);
+
+    color: #ffffff;
+
+}
+
+
+/* =========================================================
+   QUEUE NUMBER
+   ========================================================= */
+
+.queue-item-number {
+
+    flex: 0 0 45px;
+
+    width: 45px;
+    height: 45px;
 
     display: flex;
 
     justify-content: center;
     align-items: center;
 
-    z-index: 9999;
+    border-radius: 13px;
+
+    background:
+        rgba(255,255,255,0.20);
+
+    font-size: 22px;
+
+    font-weight: 900;
+
 }
 
 
-#ad-image {
+/* =========================================================
+   QUEUE REGISTER NAME
+   ========================================================= */
+
+.queue-item-name {
+
+    flex: 1;
+
+    min-width: 0;
+
+    font-size:
+        clamp(
+            15px,
+            1.2vw,
+            22px
+        );
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+/* =========================================================
+   IMPORTANT:
+   NO BLINKING QUEUE ITEMS
+   ========================================================= */
+
+.queue-refresh {
+
+    animation:
+        registerPop
+        0.55s
+        cubic-bezier(
+            0.16,
+            1,
+            0.3,
+            1
+        )
+        both;
+
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.product-branding {
+
+    position: fixed;
+
+    bottom: 10px;
+
+    left: 0;
+    right: 0;
+
+    z-index: 20;
+
+    text-align: center;
+
+    font-size:
+        clamp(
+            10px,
+            0.75vw,
+            15px
+        );
+
+    color:
+        rgba(15,23,42,0.62);
+
+    letter-spacing: 0.5px;
+
+}
+
+
+.product-branding .product-name {
+
+    font-weight: 800;
+
+    color:
+        rgba(15,23,42,0.82);
+
+}
+
+
+.product-branding .branding-separator {
+
+    margin: 0 6px;
+
+    color:
+        rgba(99,102,241,0.75);
+
+}
+
+
+.product-branding .powered-by {
+
+    font-weight: 600;
+
+    color:
+        rgba(15,23,42,0.62);
+
+}
+
+
+.product-branding .copyright {
+
+    margin-top: 3px;
+
+    font-size:
+        clamp(
+            8px,
+            0.55vw,
+            11px
+        );
+
+    color:
+        rgba(15,23,42,0.42);
+
+}
+
+
+/* Dark footer */
+
+body[data-theme="dark"]
+.product-branding .product-name {
+
+    color:
+        rgba(255,255,255,0.90);
+
+}
+
+
+body[data-theme="dark"]
+.product-branding .powered-by {
+
+    color:
+        rgba(255,255,255,0.70);
+
+}
+
+
+body[data-theme="dark"]
+.product-branding .copyright {
+
+    color:
+        rgba(255,255,255,0.45);
+
+}
+
+
+/* Green footer */
+
+body.call-active
+.product-branding .product-name {
+
+    color:
+        rgba(255,255,255,0.92);
+
+}
+
+
+body.call-active
+.product-branding .powered-by {
+
+    color:
+        rgba(255,255,255,0.72);
+
+}
+
+
+body.call-active
+.product-branding .copyright {
+
+    color:
+        rgba(255,255,255,0.45);
+
+}
+
+
+/* =========================================================
+   AD SCREEN
+   ========================================================= */
+
+#ad-screen {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    z-index: 9999;
+
+    background: #000;
+
+    overflow: hidden;
+
+}
+
+
+.ad-track {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+}
+
+
+.ad-image {
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
     width: 100%;
     height: 100%;
 
     object-fit: contain;
 
-    display: block;
+    transition:
+        transform
+        0.9s
+        cubic-bezier(
+            0.65,
+            0,
+            0.35,
+            1
+        );
+
+}
+
+
+.ad-image-current {
+
+    transform:
+        translateX(0);
+
+}
+
+
+.ad-image-next {
+
+    transform:
+        translateX(100%);
+
+}
+
+
+.ad-progress {
+
+    position: absolute;
+
+    bottom: 20px;
+
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    display: flex;
+
+    gap: 7px;
+
+}
+
+
+.ad-dot {
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,0.45);
+
+}
+
+
+.ad-dot.active {
+
+    width: 24px;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .queue-display {
+
+        grid-template-columns:
+            minmax(0, 1fr)
+            300px;
+
+        gap: 20px;
+
+    }
+
+
+    .queue-side-panel {
+
+        height: 65vh;
+
+    }
+
+}
+
+
+@media (max-width: 850px) {
+
+    .queue-display {
+
+        grid-template-columns: 1fr;
+
+        height: 90vh;
+
+        overflow-y: auto;
+
+        padding-bottom: 60px;
+
+    }
+
+
+    .queue-side-panel {
+
+        width: 90vw;
+
+        height: auto;
+
+        min-height: auto;
+
+    }
+
+
+    .queue-list {
+
+        max-height: 220px;
+
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .welcome {
+
+        font-size: 34px;
+
+    }
+
+
+    .next-cashier {
+
+        font-size: 28px;
+
+    }
+
+
+    .wait-message {
+
+        font-size: 18px;
+
+    }
+
+
+    .customer-flow {
+
+        gap: 8px;
+
+    }
+
+
+    .flow-arrow {
+
+        font-size: 20px;
+
+    }
+
+
+    .flow-title {
+
+        font-size: 14px;
+
+    }
+
+
+    .flow-description {
+
+        font-size: 10px;
+
+    }
+
+
+    .register-box {
+
+        width: 92vw;
+
+        height: 230px;
+
+    }
+
+
+    .register-name {
+
+        font-size: 32px;
+
+    }
+
+
+    .queue-bottom-row {
+
+        flex-direction: column;
+
+        gap: 8px;
+
+    }
+
 }

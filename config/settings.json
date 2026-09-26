@@ -1,6 +1,6 @@
 {
     "store_name": "New India Bazar",
-    "logo": "store_logo.jpeg",
+    "logo": "store_logo.png",
     "display_theme": "light",
     "digital_signage": {
         "enabled": true,
@@ -13,13 +13,13 @@
     },
     "messages": {
         "welcome": "Welcome To New India Bazar",
-        "next_cashier": "NEXT CASHIER",
-        "proceed": "Please Go To",
-        "now_calling": "Now Calling",
-        "next": "NEXT",
-        "ready": "Please Proceed When Ready",
+        "next_cashier": "Next Cashier",
+        "proceed": "Please Move To",
+        "now_calling": "Next Turn",
+        "next": "Next",
+        "ready": "Please Proceed Cashier is Ready",
         "wait": "Please Wait For Next Cashier",
-        "thank_you": "THANK YOU VERY MUCH"
+        "thank_you": "Thank You Very Much"
     },
     "registers": {
         "1": {
@@ -31,7 +31,7 @@
             "audio": "register2.mp3"
         },
         "3": {
-            "name": "Checkout Counter 3",
+            "name": "Checkout Counter hellow 3",
             "audio": "register3.mp3"
         },
         "4": {

@@ -1,32 +1,40 @@
+/* =========================================================
+   GLOBAL STATE
+   ========================================================= */
+
 let previousCurrent = null;
+
+let previousQueue = [];
+
 let configuration = null;
+
 let advertisementInitialized = false;
 
-/*
-========================================
-DIGITAL SIGNAGE STATE
-========================================
-*/
+
+/* =========================================================
+   DIGITAL SIGNAGE
+   ========================================================= */
 
 let adTimer = null;
-let adSlideTimer = null;
-let currentAdIndex = 0;
-let adsVisible = false;
-let lastActivityTime = Date.now();
 
-/*
-========================================
-GET CONFIGURATION
-========================================
-*/
+let adSlideTimer = null;
+
+let currentAdIndex = 0;
+
+let adsVisible = false;
+
+
+/* =========================================================
+   CONFIGURATION
+   ========================================================= */
 
 async function getConfiguration() {
 
     try {
 
-        const response = await fetch(
-            "/api/config"
-        );
+        const response =
+            await fetch("/api/config");
+
 
         if (!response.ok) {
 
@@ -36,10 +44,13 @@ async function getConfiguration() {
 
         }
 
+
         configuration =
             await response.json();
 
+
         updateConfiguration();
+
 
         if (!advertisementInitialized) {
 
@@ -49,7 +60,8 @@ async function getConfiguration() {
 
         }
 
-    } catch (error) {
+    }
+    catch (error) {
 
         console.error(
             "Unable to get configuration:",
@@ -61,57 +73,98 @@ async function getConfiguration() {
 }
 
 
-/*
-========================================
-UPDATE DISPLAY CONFIGURATION
-========================================
-*/
+/* =========================================================
+   HELPER
+   ========================================================= */
+
+function setText(
+    elementId,
+    value
+) {
+
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+
+    if (element) {
+
+        element.textContent =
+            value;
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
 
 function updateLogos() {
+
     if (!configuration) {
         return;
     }
 
-    const logo = configuration.logo;
+
+    const logo =
+        configuration.logo;
+
 
     const logoElements = [
-        document.getElementById("store-logo-idle"),
-        document.getElementById("store-logo-call"),
-        document.getElementById("store-logo-queue")
+
+        document.getElementById(
+            "store-logo-idle"
+        ),
+
+        document.getElementById(
+            "store-logo-call"
+        ),
+
+        document.getElementById(
+            "store-logo-queue"
+        )
+
     ];
 
-    const storeNameElements = [
-        document.getElementById("store-name-idle"),
-        document.getElementById("store-name-call"),
-        document.getElementById("store-name-queue")
-    ];
 
-    logoElements.forEach((element) => {
-        if (!element) {
-            return;
-        }
+    logoElements.forEach(
+        (element) => {
 
-        if (logo) {
-            element.src = `/store-logo/${logo}?t=${Date.now()}`;
-            element.style.display = "block";
-        } else {
-            element.src = "";
-            element.style.display = "none";
-        }
-    });
+            if (!element) {
+                return;
+            }
 
-    storeNameElements.forEach((element) => {
-        if (!element) {
-            return;
-        }
 
-        if (logo) {
-            element.style.display = "none";
-        } else {
-            element.style.display = "block";
+            if (logo) {
+
+                element.src =
+                    `/store-logo/${logo}?t=${Date.now()}`;
+
+                element.style.display =
+                    "block";
+
+            }
+            else {
+
+                element.src = "";
+
+                element.style.display =
+                    "none";
+
+            }
+
         }
-    });
+    );
+
 }
+
+
+/* =========================================================
+   UPDATE CONFIGURATION
+   ========================================================= */
 
 function updateConfiguration() {
 
@@ -120,140 +173,786 @@ function updateConfiguration() {
     }
 
 
-    const storeName = configuration.store_name || "MiRen Next";
-
-    updateLogos();
-    updateDisplayTheme();
+    const storeName =
+        configuration.store_name ||
+        "MiRen Next";
 
 
     const messages =
-        configuration.messages || {};
+        configuration.messages ||
+        {};
 
 
-    const registers =
-        configuration.registers || {};
+    updateLogos();
+
+    updateDisplayTheme();
 
 
-    /*
-    ------------------------------------
-    Store Name
-    ------------------------------------
-    */
-
-    document.getElementById(
-        "store-name-idle"
-    ).textContent = storeName;
+    setText(
+        "store-name-idle",
+        storeName
+    );
 
 
-    document.getElementById(
-        "store-name-call"
-    ).textContent = storeName;
+    setText(
+        "store-name-call",
+        storeName
+    );
 
 
-    document.getElementById(
-        "store-name-queue"
-    ).textContent = storeName;
+    setText(
+        "store-name-queue",
+        storeName
+    );
 
 
-    /*
-    ------------------------------------
-    Messages
-    ------------------------------------
-    */
-
-    document.getElementById(
-        "welcome-message"
-    ).textContent =
+    setText(
+        "welcome-message",
         messages.welcome ||
-        `WELCOME TO ${storeName}`;
+        `WELCOME TO ${storeName}`
+    );
 
 
-    document.getElementById(
-        "idle-next-cashier"
-    ).textContent =
+    setText(
+        "idle-next-cashier",
         messages.next_cashier ||
-        "NEXT CASHIER";
+        "NEXT CASHIER"
+    );
 
 
-    document.getElementById(
-        "call-next-cashier"
-    ).textContent =
+    setText(
+        "call-next-cashier",
         messages.next_cashier ||
-        "NEXT CASHIER";
+        "NEXT CASHIER"
+    );
 
 
-    document.getElementById(
-        "proceed-message"
-    ).textContent =
+    setText(
+        "proceed-message",
         messages.proceed ||
-        "PLEASE PROCEED TO";
+        "PLEASE PROCEED TO"
+    );
 
 
-    document.getElementById(
-        "now-calling"
-    ).textContent =
+    /*
+       IMPORTANT:
+       Queue screen uses Admin's proceed message.
+    */
+
+    setText(
+        "queue-proceed-message",
+        messages.proceed ||
+        "PLEASE PROCEED TO"
+    );
+
+
+    setText(
+        "now-calling",
         messages.now_calling ||
-        "NOW CALLING";
+        "NOW CALLING"
+    );
 
 
-    document.getElementById(
-        "queue-message"
-    ).textContent =
+    setText(
+        "queue-message",
         messages.ready ||
-        "PLEASE PROCEED WHEN READY";
+        "PLEASE PROCEED WHEN READY"
+    );
 
-    const waitMessage =
-        document.querySelector(".wait-message");
 
-    if (waitMessage) {
+    setText(
+        "idle-thank-you",
+        messages.thank_you ||
+        "THANK YOU"
+    );
 
-        waitMessage.textContent =
-            messages.wait ||
-            "PLEASE WAIT FOR THE NEXT AVAILABLE REGISTER";
+
+    setText(
+        "call-thank-you",
+        messages.thank_you ||
+        "THANK YOU"
+    );
+
+
+    /*
+       If logo exists, don't show store name.
+    */
+
+    const storeNames = [
+
+        document.getElementById(
+            "store-name-idle"
+        ),
+
+        document.getElementById(
+            "store-name-call"
+        ),
+
+        document.getElementById(
+            "store-name-queue"
+        )
+
+    ];
+
+
+    storeNames.forEach(
+        (element) => {
+
+            if (!element) {
+                return;
+            }
+
+
+            element.style.display =
+                configuration.logo
+                    ? "none"
+                    : "block";
+
+        }
+    );
+
+
+    /*
+       Refresh current register
+       using latest admin settings.
+    */
+
+    if (previousCurrent !== null) {
+
+        updateCurrentRegister(
+            previousCurrent
+        );
 
     }
 
-
-    document.getElementById(
-        "idle-thank-you"
-    ).textContent =
-        messages.thank_you ||
-        "THANK YOU";
-
-
-    document.getElementById(
-        "call-thank-you"
-    ).textContent =
-        messages.thank_you ||
-        "THANK YOU";
-
-
-    /*
-    ------------------------------------
-    Refresh current register name
-    ------------------------------------
-    */
-
-    updateCurrentRegisterName();
-
 }
 
+
+/* =========================================================
+   THEME
+   ========================================================= */
+
 function updateDisplayTheme() {
+
     if (!configuration) {
         return;
     }
 
-    const theme = configuration.display_theme || "light";
 
-    document.body.setAttribute("data-theme", theme);
+    document.body.setAttribute(
+        "data-theme",
+        configuration.display_theme ||
+        "light"
+    );
+
 }
 
 
-/*
-========================================
-DIGITAL SIGNAGE
-========================================
-*/
+/* =========================================================
+   REGISTER NAME
+   ========================================================= */
+
+function getRegisterName(
+    register
+) {
+
+    if (
+        !configuration ||
+        !configuration.registers
+    ) {
+
+        return `REGISTER ${register}`;
+
+    }
+
+
+    const registerConfig =
+        configuration.registers[
+            String(register)
+        ];
+
+
+    if (
+        registerConfig &&
+        registerConfig.name
+    ) {
+
+        return registerConfig.name;
+
+    }
+
+
+    return `REGISTER ${register}`;
+
+}
+
+
+/* =========================================================
+   UPDATE CURRENT REGISTER
+   ========================================================= */
+
+function updateCurrentRegister(
+    register
+) {
+
+    if (
+        register === null ||
+        register === undefined
+    ) {
+
+        return;
+
+    }
+
+
+    const registerName =
+        getRegisterName(
+            register
+        );
+
+
+    setText(
+        "register-name",
+        registerName
+    );
+
+
+    setText(
+        "queue-current-name",
+        registerName
+    );
+
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+async function getStatus() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/status"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to get status"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        updateDisplay(data);
+
+    }
+    catch (error) {
+
+        console.error(
+            "Unable to get cashier status:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   UPDATE DISPLAY
+   ========================================================= */
+
+function updateDisplay(data) {
+
+    const current =
+        data.current_register;
+
+
+    const queue =
+        Array.isArray(data.queue)
+            ? data.queue
+            : [];
+
+
+    const remainingSeconds =
+        data.remaining_seconds || 0;
+
+
+    const idleScreen =
+        document.getElementById(
+            "idle-screen"
+        );
+
+
+    const callScreen =
+        document.getElementById(
+            "call-screen"
+        );
+
+
+    const queueScreen =
+        document.getElementById(
+            "queue-screen"
+        );
+
+
+    /*
+    =========================================================
+    ACTIVE REGISTER
+    =========================================================
+    */
+
+    if (current !== null) {
+
+        hideAdvertisements();
+
+        document.body.classList.add(
+            "call-active"
+        );
+
+    }
+    else {
+
+        document.body.classList.remove(
+            "call-active"
+        );
+
+    }
+
+
+    /*
+    =========================================================
+    IDLE
+    =========================================================
+    */
+
+    if (current === null) {
+
+        idleScreen.classList.remove(
+            "hidden"
+        );
+
+
+        callScreen.classList.add(
+            "hidden"
+        );
+
+
+        queueScreen.classList.add(
+            "hidden"
+        );
+
+
+        if (
+            previousCurrent !== null
+        ) {
+
+            resetAdvertisementTimer();
+
+        }
+
+
+        previousCurrent =
+            null;
+
+
+        previousQueue =
+            [];
+
+
+        return;
+
+    }
+
+
+    /*
+    =========================================================
+    QUEUE MODE
+    =========================================================
+    */
+
+    if (queue.length > 0) {
+
+        idleScreen.classList.add(
+            "hidden"
+        );
+
+
+        callScreen.classList.add(
+            "hidden"
+        );
+
+
+        queueScreen.classList.remove(
+            "hidden"
+        );
+
+
+        /*
+        -----------------------------------------------------
+        Current register
+        -----------------------------------------------------
+        */
+
+        const currentChanged =
+            previousCurrent !== current;
+
+
+        updateCurrentRegister(
+            current
+        );
+
+
+        /*
+        -----------------------------------------------------
+        Admin proceed message
+        -----------------------------------------------------
+        */
+
+        const messages =
+            configuration &&
+            configuration.messages
+                ? configuration.messages
+                : {};
+
+
+        setText(
+            "queue-proceed-message",
+            messages.proceed ||
+            "PLEASE PROCEED TO"
+        );
+
+
+        /*
+        -----------------------------------------------------
+        Ready message
+        -----------------------------------------------------
+        */
+
+        setText(
+            "queue-message",
+            messages.ready ||
+            "PLEASE PROCEED WHEN READY"
+        );
+
+
+        /*
+        -----------------------------------------------------
+        Timer ONLY updates timer
+        -----------------------------------------------------
+        */
+
+        setText(
+            "queue-timer",
+            remainingSeconds
+        );
+
+
+        /*
+        -----------------------------------------------------
+        Queue changed?
+        -----------------------------------------------------
+        */
+
+        const queueChanged =
+            JSON.stringify(previousQueue) !==
+            JSON.stringify(queue);
+
+
+        /*
+        -----------------------------------------------------
+        ONLY rebuild queue list if queue changed.
+        This fixes blinking.
+        -----------------------------------------------------
+        */
+
+        if (queueChanged) {
+
+            setText(
+                "queue-count",
+                queue.length
+            );
+
+
+            updateQueueList(
+                queue
+            );
+
+        }
+
+
+        /*
+        -----------------------------------------------------
+        Animate current register only when
+        current register actually changes.
+        -----------------------------------------------------
+        */
+
+        if (currentChanged) {
+
+            restartAnimation(
+                "queue-current",
+                "queue-refresh"
+            );
+
+        }
+
+
+        previousCurrent =
+            current;
+
+
+        previousQueue =
+            [...queue];
+
+
+        return;
+
+    }
+
+
+    /*
+    =========================================================
+    SINGLE REGISTER MODE
+    =========================================================
+    */
+
+    idleScreen.classList.add(
+        "hidden"
+    );
+
+
+    queueScreen.classList.add(
+        "hidden"
+    );
+
+
+    callScreen.classList.remove(
+        "hidden"
+    );
+
+
+    const currentChanged =
+        previousCurrent !== current;
+
+
+    /*
+    ---------------------------------------------------------
+    Register name
+    ---------------------------------------------------------
+    */
+
+    updateCurrentRegister(
+        current
+    );
+
+
+    /*
+    ---------------------------------------------------------
+    Proceed message
+    ---------------------------------------------------------
+    */
+
+    const messages =
+        configuration &&
+        configuration.messages
+            ? configuration.messages
+            : {};
+
+
+    setText(
+        "proceed-message",
+        messages.proceed ||
+        "PLEASE PROCEED TO"
+    );
+
+
+    /*
+    ---------------------------------------------------------
+    Timer
+    ---------------------------------------------------------
+    */
+
+    setText(
+        "timer",
+        remainingSeconds
+    );
+
+
+    /*
+    ---------------------------------------------------------
+    Animate only when new register appears
+    ---------------------------------------------------------
+    */
+
+    if (currentChanged) {
+
+        restartAnimation(
+            "register-box",
+            "register-pop"
+        );
+
+    }
+
+
+    previousCurrent =
+        current;
+
+
+    previousQueue =
+        [...queue];
+
+}
+
+
+/* =========================================================
+   UPDATE QUEUE LIST
+   ========================================================= */
+
+function updateQueueList(
+    queue
+) {
+
+    const list =
+        document.getElementById(
+            "queue-list"
+        );
+
+
+    if (!list) {
+        return;
+    }
+
+
+    /*
+       Clear only when the actual queue changes.
+    */
+
+    list.innerHTML = "";
+
+
+    queue.forEach(
+        (
+            register,
+            index
+        ) => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "queue-item";
+
+
+            const number =
+                document.createElement(
+                    "div"
+                );
+
+
+            number.className =
+                "queue-item-number";
+
+
+            number.textContent =
+                register;
+
+
+            const name =
+                document.createElement(
+                    "div"
+                );
+
+
+            name.className =
+                "queue-item-name";
+
+
+            name.textContent =
+                getRegisterName(
+                    register
+                );
+
+
+            item.appendChild(
+                number
+            );
+
+
+            item.appendChild(
+                name
+            );
+
+
+            /*
+               IMPORTANT:
+               No animation delay here.
+
+               This prevents the queue items from
+               looking like they blink every second.
+            */
+
+
+            list.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RESTART ANIMATION
+   ========================================================= */
+
+function restartAnimation(
+    elementId,
+    animationClass
+) {
+
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    element.classList.remove(
+        animationClass
+    );
+
+
+    void element.offsetWidth;
+
+
+    element.classList.add(
+        animationClass
+    );
+
+}
+
+
+/* =========================================================
+   DIGITAL SIGNAGE
+   ========================================================= */
 
 function getDigitalSignageConfig() {
 
@@ -261,7 +960,12 @@ function getDigitalSignageConfig() {
         return null;
     }
 
-    return configuration.digital_signage || null;
+
+    return (
+        configuration.digital_signage ||
+        null
+    );
+
 }
 
 
@@ -274,14 +978,19 @@ function getAdScreen() {
 }
 
 
+/* =========================================================
+   HIDE ADS
+   ========================================================= */
+
 function hideAdvertisements() {
 
-    const adScreen =
+    const screen =
         getAdScreen();
 
-    if (adScreen) {
 
-        adScreen.classList.add(
+    if (screen) {
+
+        screen.classList.add(
             "hidden"
         );
 
@@ -293,7 +1002,9 @@ function hideAdvertisements() {
 
     if (adTimer) {
 
-        clearTimeout(adTimer);
+        clearTimeout(
+            adTimer
+        );
 
         adTimer = null;
 
@@ -313,14 +1024,16 @@ function hideAdvertisements() {
 }
 
 
+/* =========================================================
+   RESET AD TIMER
+   ========================================================= */
+
 function resetAdvertisementTimer() {
 
     hideAdvertisements();
 
-    currentAdIndex = 0;
 
-    lastActivityTime =
-        Date.now();
+    currentAdIndex = 0;
 
 
     const signage =
@@ -330,7 +1043,7 @@ function resetAdvertisementTimer() {
     if (
         !signage ||
         signage.enabled === false ||
-        !signage.ads ||
+        !Array.isArray(signage.ads) ||
         signage.ads.length === 0
     ) {
 
@@ -339,7 +1052,7 @@ function resetAdvertisementTimer() {
     }
 
 
-    const startDelay =
+    const delay =
         Math.max(
             0,
             Number(
@@ -348,13 +1061,18 @@ function resetAdvertisementTimer() {
         );
 
 
-    adTimer = setTimeout(
-        showAdvertisements,
-        startDelay * 1000
-    );
+    adTimer =
+        setTimeout(
+            showAdvertisements,
+            delay * 1000
+        );
 
 }
 
+
+/* =========================================================
+   SHOW ADS
+   ========================================================= */
 
 function showAdvertisements() {
 
@@ -365,7 +1083,7 @@ function showAdvertisements() {
     if (
         !signage ||
         signage.enabled === false ||
-        !signage.ads ||
+        !Array.isArray(signage.ads) ||
         signage.ads.length === 0
     ) {
 
@@ -374,23 +1092,21 @@ function showAdvertisements() {
     }
 
 
-    /*
-    Do not show advertisements if
-    someone is currently being called.
-    */
-
-    const adScreen =
-        getAdScreen();
-
-
-    if (!adScreen) {
-
-        console.warn(
-            "Advertisement screen not found."
-        );
+    if (
+        previousCurrent !== null
+    ) {
 
         return;
 
+    }
+
+
+    const screen =
+        getAdScreen();
+
+
+    if (!screen) {
+        return;
     }
 
 
@@ -399,19 +1115,46 @@ function showAdvertisements() {
     currentAdIndex = 0;
 
 
-    updateAdvertisement();
+    const currentImage =
+        document.getElementById(
+            "ad-image-current"
+        );
 
 
-    adScreen.classList.remove(
+    const nextImage =
+        document.getElementById(
+            "ad-image-next"
+        );
+
+
+    if (currentImage) {
+
+        currentImage.src =
+            `/ads/${signage.ads[0]}?t=${Date.now()}`;
+
+    }
+
+
+    if (
+        nextImage &&
+        signage.ads.length > 1
+    ) {
+
+        nextImage.src =
+            `/ads/${signage.ads[1]}?t=${Date.now()}`;
+
+    }
+
+
+    screen.classList.remove(
         "hidden"
     );
 
 
-    /*
-    Start rotating advertisements
-    */
+    buildAdProgress();
 
-    const slideInterval =
+
+    const interval =
         Math.max(
             1,
             Number(
@@ -420,12 +1163,14 @@ function showAdvertisements() {
         );
 
 
-    if (signage.ads.length > 1) {
+    if (
+        signage.ads.length > 1
+    ) {
 
         adSlideTimer =
             setInterval(
                 showNextAdvertisement,
-                slideInterval * 1000
+                interval * 1000
             );
 
     }
@@ -433,16 +1178,26 @@ function showAdvertisements() {
 }
 
 
-function updateAdvertisement() {
+/* =========================================================
+   AD PROGRESS
+   ========================================================= */
+
+function buildAdProgress() {
+
+    const progress =
+        document.getElementById(
+            "ad-progress"
+        );
+
 
     const signage =
         getDigitalSignageConfig();
 
 
     if (
+        !progress ||
         !signage ||
-        !signage.ads ||
-        signage.ads.length === 0
+        !Array.isArray(signage.ads)
     ) {
 
         return;
@@ -450,43 +1205,75 @@ function updateAdvertisement() {
     }
 
 
-    const adScreen =
-        getAdScreen();
+    progress.innerHTML = "";
 
 
-    if (!adScreen) {
+    signage.ads.forEach(
+        (_, index) => {
 
-        return;
-
-    }
-
-
-    const adImage =
-        document.getElementById(
-            "ad-image"
-        );
+            const dot =
+                document.createElement(
+                    "div"
+                );
 
 
-    if (!adImage) {
-
-        return;
-
-    }
+            dot.className =
+                "ad-dot";
 
 
-    const filename =
-        signage.ads[
-        currentAdIndex
-        ];
+            if (
+                index === currentAdIndex
+            ) {
+
+                dot.classList.add(
+                    "active"
+                );
+
+            }
 
 
-    adImage.src =
-        `/ads/${filename}?t=${Date.now()}`;
+            progress.appendChild(
+                dot
+            );
+
+        }
+    );
 
 }
 
 
+function updateAdProgress() {
+
+    const dots =
+        document.querySelectorAll(
+            ".ad-dot"
+        );
+
+
+    dots.forEach(
+        (dot, index) => {
+
+            dot.classList.toggle(
+                "active",
+                index === currentAdIndex
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   NEXT AD
+   ========================================================= */
+
 function showNextAdvertisement() {
+
+    if (!adsVisible) {
+        return;
+    }
+
 
     const signage =
         getDigitalSignageConfig();
@@ -494,8 +1281,8 @@ function showNextAdvertisement() {
 
     if (
         !signage ||
-        !signage.ads ||
-        signage.ads.length === 0
+        !Array.isArray(signage.ads) ||
+        signage.ads.length < 2
     ) {
 
         return;
@@ -503,361 +1290,118 @@ function showNextAdvertisement() {
     }
 
 
-    currentAdIndex =
+    const currentImage =
+        document.getElementById(
+            "ad-image-current"
+        );
+
+
+    const nextImage =
+        document.getElementById(
+            "ad-image-next"
+        );
+
+
+    if (
+        !currentImage ||
+        !nextImage
+    ) {
+
+        return;
+
+    }
+
+
+    const nextIndex =
         (
             currentAdIndex + 1
         ) %
         signage.ads.length;
 
 
-    updateAdvertisement();
+    nextImage.src =
+        `/ads/${signage.ads[nextIndex]}?t=${Date.now()}`;
 
-}
 
+    nextImage.style.transform =
+        "translateX(100%)";
 
-/*
-========================================
-GET REGISTER NAME
-========================================
-*/
 
-function getRegisterName(register) {
+    requestAnimationFrame(
+        () => {
 
-    if (
-        !configuration ||
-        !configuration.registers
-    ) {
+            currentImage.style.transform =
+                "translateX(-100%)";
 
-        return `REGISTER ${register}`;
 
-    }
-
-
-    const registerConfig =
-        configuration.registers[
-        String(register)
-        ];
-
-
-    if (
-        registerConfig &&
-        registerConfig.name
-    ) {
-
-        return registerConfig.name;
-
-    }
-
-
-    return `REGISTER ${register}`;
-
-}
-
-
-/*
-========================================
-UPDATE CURRENT REGISTER NAME
-========================================
-*/
-
-function updateCurrentRegisterName() {
-
-    if (previousCurrent === null) {
-        return;
-    }
-
-
-    const registerName =
-        getRegisterName(
-            previousCurrent
-        );
-
-
-    const registerBox =
-        document.getElementById(
-            "register-box"
-        );
-
-
-    const queueCurrent =
-        document.getElementById(
-            "queue-current"
-        );
-
-
-    if (registerBox) {
-
-        registerBox.textContent =
-            `${registerName} →`;
-
-    }
-
-
-    if (queueCurrent) {
-
-        queueCurrent.textContent =
-            registerName;
-
-    }
-
-}
-
-
-/*
-========================================
-GET STATUS
-========================================
-*/
-
-async function getStatus() {
-
-    try {
-
-        const response = await fetch(
-            "/api/status"
-        );
-
-        const data =
-            await response.json();
-
-        updateDisplay(data);
-
-    } catch (error) {
-
-        console.error(
-            "Unable to get cashier status:",
-            error
-        );
-
-    }
-
-}
-
-
-/*
-========================================
-UPDATE DISPLAY
-========================================
-*/
-
-function updateDisplay(data) {
-
-    const current =
-        data.current_register;
-
-    const queue =
-        data.queue || [];
-
-    /*
-------------------------------------
-Digital Signage Activity Detection
-------------------------------------
-*/
-
-    if (current !== null) {
-
-        /*
-        A register is active.
-        Advertisements must immediately stop.
-        */
-
-        hideAdvertisements();
-
-        lastActivityTime =
-            Date.now();
-
-    } else if (adsVisible) {
-
-        /*
-        No register is active but ads
-        are already showing.
-    
-        Keep the advertisement screen.
-        */
-
-        return;
-
-    }
-
-
-    const remainingSeconds =
-        data.remaining_seconds || 0;
-
-
-    const idleScreen =
-        document.getElementById(
-            "idle-screen"
-        );
-
-    const callScreen =
-        document.getElementById(
-            "call-screen"
-        );
-
-    const queueScreen =
-        document.getElementById(
-            "queue-screen"
-        );
-
-
-    /*
-    ------------------------------------
-    No Current Register
-    ------------------------------------
-    */
-
-    if (current === null) {
-
-        idleScreen.classList.remove(
-            "hidden"
-        );
-
-        callScreen.classList.add(
-            "hidden"
-        );
-
-        queueScreen.classList.add(
-            "hidden"
-        );
-
-        /*
-    If we just finished a register call,
-    restart the advertisement timer.
-    */
-
-        if (previousCurrent !== null) {
-
-            resetAdvertisementTimer();
+            nextImage.style.transform =
+                "translateX(0)";
 
         }
-
-        previousCurrent = null;
-
-        return;
-
-    }
+    );
 
 
-    /*
-    ------------------------------------
-    Queue Mode
-    ------------------------------------
-    */
+    setTimeout(
+        () => {
 
-    if (queue.length > 0) {
-
-        idleScreen.classList.add(
-            "hidden"
-        );
-
-        callScreen.classList.add(
-            "hidden"
-        );
-
-        queueScreen.classList.remove(
-            "hidden"
-        );
+            currentImage.src =
+                nextImage.src;
 
 
-        const currentRegisterName =
-            getRegisterName(current);
+            currentImage.style.transition =
+                "none";
 
 
-        document.getElementById(
-            "queue-current"
-        ).textContent =
-            currentRegisterName;
+            currentImage.style.transform =
+                "translateX(0)";
 
 
-        const nextRegisterName =
-            getRegisterName(
-                queue[0]
+            nextImage.style.transition =
+                "none";
+
+
+            nextImage.style.transform =
+                "translateX(100%)";
+
+
+            requestAnimationFrame(
+                () => {
+
+                    currentImage.style.transition =
+                        "";
+
+                    nextImage.style.transition =
+                        "";
+
+                }
             );
 
 
-        const nextMessage =
-            configuration &&
-                configuration.messages &&
-                configuration.messages.next
-                ? configuration.messages.next
-                : "NEXT";
+            currentAdIndex =
+                nextIndex;
 
 
-        document.getElementById(
-            "next-register"
-        ).textContent =
-            `${nextMessage}: ${nextRegisterName}`;
+            updateAdProgress();
 
-
-        document.getElementById(
-            "queue-timer"
-        ).textContent =
-            remainingSeconds;
-
-
-        previousCurrent = current;
-
-        return;
-
-    }
-
-
-    /*
-    ------------------------------------
-    Normal Call Mode
-    ------------------------------------
-    */
-
-    idleScreen.classList.add(
-        "hidden"
+        },
+        950
     );
-
-    queueScreen.classList.add(
-        "hidden"
-    );
-
-    callScreen.classList.remove(
-        "hidden"
-    );
-
-
-    const registerName =
-        getRegisterName(current);
-
-
-    document.getElementById(
-        "register-box"
-    ).textContent =
-        `${registerName} →`;
-
-
-    document.getElementById(
-        "timer"
-    ).textContent =
-        remainingSeconds;
-
-
-    previousCurrent = current;
 
 }
 
 
-/*
-========================================
-INITIAL LOAD
-========================================
-*/
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
 
 getConfiguration();
 
 getStatus();
 
 
-/*
-========================================
-REFRESH STATUS
-========================================
-*/
+/* =========================================================
+   STATUS EVERY SECOND
+   ========================================================= */
 
 setInterval(
     getStatus,
@@ -865,16 +1409,9 @@ setInterval(
 );
 
 
-/*
-========================================
-REFRESH CONFIGURATION
-========================================
-
-Check every 3 seconds so that if the
-admin changes the settings, the TV
-display updates automatically.
-========================================
-*/
+/* =========================================================
+   CONFIG EVERY 3 SECONDS
+   ========================================================= */
 
 setInterval(
     getConfiguration,

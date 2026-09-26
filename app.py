@@ -17,18 +17,36 @@ try:
 except ModuleNotFoundError:
     GPIOController = None
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash
+from dotenv import load_dotenv
 import os
 import threading
 import time
+import json
 
-ADMIN_PASSWORD = "admin123"
+load_dotenv()
 app = Flask(__name__)
-app.secret_key = "miren-next-change-this-secret-key"
+app.secret_key = os.environ.get(
+    "MIREN_SECRET_KEY"
+)
+
+if not app.secret_key:
+    raise RuntimeError(
+        "MIREN_SECRET_KEY is not configured."
+    )
+
+
 call_id = 0
 timer_end_time = None
 
 BASE_DIR = os.path.dirname(
     os.path.abspath(__file__)
+)
+
+AUTH_FILE = os.path.join(
+    BASE_DIR,
+    "config",
+    "auth.json"
 )
 
 LOGO_FOLDER = os.path.join(
@@ -64,6 +82,22 @@ announcement_service = AnnouncementService(
     AUDIO_FOLDER
 )
 
+
+def load_auth():
+
+    if not os.path.exists(AUTH_FILE):
+
+        raise FileNotFoundError(
+            f"Authentication file not found: {AUTH_FILE}"
+        )
+
+    with open(
+        AUTH_FILE,
+        "r",
+        encoding="utf-8"
+    ) as file:
+
+        return json.load(file)
 
 # Admin required function
 def admin_required(function):
@@ -328,43 +362,6 @@ def call_register(register):
         }), 400
 
 
-# @app.route(
-#     "/api/register/<int:register>/call",
-#     methods=["POST"]
-# )
-# def call_register(register):
-
-#     try:
-
-#         added = queue_manager.request_register(
-#             register
-#         )
-
-#         status = queue_manager.get_status()
-
-#         # Only announce if this register
-#         # became the current register
-#         if (
-#             added
-#             and status["current_register"] == register
-#         ):
-
-#             start_call_timer()
-
-#         return jsonify({
-#             "success": True,
-#             "added": added,
-#             "status": queue_manager.get_status()
-#         })
-
-#     except ValueError as error:
-
-#         return jsonify({
-#             "success": False,
-#             "error": str(error)
-#         }), 400
-
-
 @app.route(
     "/api/complete",
     methods=["POST"]
@@ -426,22 +423,100 @@ def clear_queue():
 
 
 # admin
+# @app.route("/admin", methods=["GET", "POST"])
+# def admin_login():
+
+#     if session.get("admin_logged_in"):
+
+#         return render_template("admin.html")
+
+
+#     if request.method == "POST":
+
+#         password = request.form.get(
+#             "password",
+#             ""
+#         )
+
+#         if password == ADMIN_PASSWORD:
+
+#             session["admin_logged_in"] = True
+
+#             return redirect(
+#                 url_for("admin_dashboard")
+#             )
+
+#         return render_template(
+#             "admin_login.html",
+#             error="Invalid password."
+#         )
+
+
+#     return render_template(
+#         "admin_login.html"
+#     )
+
+
 @app.route("/admin", methods=["GET", "POST"])
 def admin_login():
 
     if session.get("admin_logged_in"):
 
-        return render_template("admin.html")
+        return render_template(
+            "admin.html"
+        )
 
 
     if request.method == "POST":
+
+        username = request.form.get(
+            "username",
+            ""
+        ).strip()
 
         password = request.form.get(
             "password",
             ""
         )
 
-        if password == ADMIN_PASSWORD:
+
+        try:
+
+            auth = load_auth()
+
+        except Exception as error:
+
+            print(
+                f"Authentication configuration error: {error}"
+            )
+
+            return render_template(
+                "admin_login.html",
+                error="Authentication configuration error."
+            )
+
+
+        stored_username = auth.get(
+            "username",
+            ""
+        )
+
+        password_hash = auth.get(
+            "password_hash",
+            ""
+        )
+
+
+        if (
+            username == stored_username
+            and password_hash
+            and check_password_hash(
+                password_hash,
+                password
+            )
+        ):
+
+            session.clear()
 
             session["admin_logged_in"] = True
 
@@ -449,9 +524,10 @@ def admin_login():
                 url_for("admin_dashboard")
             )
 
+
         return render_template(
             "admin_login.html",
-            error="Invalid password."
+            error="Invalid username or password."
         )
 
 
