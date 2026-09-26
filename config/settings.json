@@ -1,7 +1,7 @@
 {
     "store_name": "New India Bazar",
     "logo": "store_logo.png",
-    "display_theme": "light",
+    "display_theme": "dark",
     "digital_signage": {
         "enabled": true,
         "start_delay": 30,
