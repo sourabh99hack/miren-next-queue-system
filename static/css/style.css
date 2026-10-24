@@ -1,4 +1,22 @@
 /* =========================================================
+   SCALE UNIT
+   ---------------------------------------------------------
+   The layout is designed at 1920 x 1080.
+   --u = one design pixel, scaled to the current screen:
+     1920x1080 -> 1px   3840x2160 -> 2px   7680x4320 -> 4px
+   min() keeps the whole layout on screen at any aspect ratio
+   (ultra-wide walls get extra background at the sides).
+   Every size below is calc(<px at 1080p> * var(--u)).
+   ========================================================= */
+
+:root {
+
+    --u: min(100vw / 1920, 100vh / 1080);
+
+}
+
+
+/* =========================================================
    GLOBAL
    ========================================================= */
 
@@ -77,6 +95,7 @@ body[data-theme="dark"] {
 
 /* =========================================================
    MAIN DISPLAY
+   (background always fills the whole screen)
    ========================================================= */
 
 .display-container {
@@ -155,6 +174,7 @@ body[data-theme="dark"] .display-container {
 
 /* =========================================================
    LIGHT MODE MOVING ORBS
+   (decorative background - sized to the screen on purpose)
    ========================================================= */
 
 .display-container::before,
@@ -171,7 +191,7 @@ body[data-theme="dark"] .display-container {
 
     pointer-events: none;
 
-    filter: blur(75px);
+    filter: blur(calc(75 * var(--u)));
 
     opacity: 0.18;
 
@@ -261,9 +281,9 @@ body[data-theme="dark"] .display-container {
 
     z-index: 2;
 
-    width: min(94vw, 1900px);
+    width: calc(1805 * var(--u));
 
-    height: min(90vh, 980px);
+    height: calc(972 * var(--u));
 
     display: flex;
 
@@ -286,25 +306,17 @@ body[data-theme="dark"] .display-container {
 
     width: auto;
 
-    max-width: clamp(
-        180px,
-        18vw,
-        380px
-    );
+    max-width: calc(346 * var(--u));
 
-    max-height: clamp(
-        100px,
-        18vh,
-        210px
-    );
+    max-height: calc(194 * var(--u));
 
     object-fit: contain;
 
-    margin-bottom: 1.2vh;
+    margin-bottom: calc(13 * var(--u));
 
     filter:
         drop-shadow(
-            0 8px 20px
+            0 calc(8 * var(--u)) calc(20 * var(--u))
             rgba(0, 0, 0, 0.10)
         );
 
@@ -317,16 +329,11 @@ body[data-theme="dark"] .display-container {
 
 .store-name {
 
-    font-size:
-        clamp(
-            24px,
-            2.3vw,
-            44px
-        );
+    font-size: calc(44 * var(--u));
 
     font-weight: 800;
 
-    margin-bottom: 1vh;
+    margin-bottom: calc(11 * var(--u));
 
 }
 
@@ -337,53 +344,38 @@ body[data-theme="dark"] .display-container {
 
 .welcome {
 
-    font-size:
-        clamp(
-            42px,
-            5vw,
-            90px
-        );
+    font-size: calc(90 * var(--u));
 
     line-height: 1.05;
 
     font-weight: 800;
 
-    margin-bottom: 2vh;
+    margin-bottom: calc(22 * var(--u));
 
 }
 
 
 .next-cashier {
 
-    font-size:
-        clamp(
-            34px,
-            4vw,
-            70px
-        );
+    font-size: calc(70 * var(--u));
 
     font-weight: 800;
 
     color: #735cff;
 
-    margin-bottom: 0.5vh;
+    margin-bottom: calc(5 * var(--u));
 
 }
 
 
 .wait-message {
 
-    font-size:
-        clamp(
-            22px,
-            2vw,
-            38px
-        );
+    font-size: calc(38 * var(--u));
 
     color:
         var(--display-secondary-text);
 
-    margin-bottom: 2vh;
+    margin-bottom: calc(22 * var(--u));
 
 }
 
@@ -399,26 +391,16 @@ body[data-theme="dark"] .display-container {
     align-items: center;
     justify-content: center;
 
-    gap:
-        clamp(
-            20px,
-            3.5vw,
-            80px
-        );
+    gap: calc(67 * var(--u));
 
-    margin-top: 1vh;
+    margin-top: calc(11 * var(--u));
 
 }
 
 
 .flow-item {
 
-    min-width:
-        clamp(
-            100px,
-            10vw,
-            190px
-        );
+    min-width: calc(190 * var(--u));
 
     display: flex;
 
@@ -429,56 +411,50 @@ body[data-theme="dark"] .display-container {
 }
 
 
+/* (was defined twice before - merged into one rule) */
+
 .flow-icon {
 
-    width:
-        clamp(
-            60px,
-            4.5vw,
-            90px
-        );
+    width: calc(64 * var(--u));
 
-    height:
-        clamp(
-            60px,
-            4.5vw,
-            90px
-        );
+    height: calc(64 * var(--u));
 
     display: flex;
 
     justify-content: center;
     align-items: center;
 
-    border-radius: 20px;
+    border-radius: calc(20 * var(--u));
 
     background:
         rgba(255, 255, 255, 0.86);
 
     box-shadow:
-        0 10px 30px
+        0 calc(10 * var(--u)) calc(30 * var(--u))
         rgba(15, 23, 42, 0.08);
 
-    font-size:
-        clamp(
-            25px,
-            2.2vw,
-            40px
-        );
+    font-size: calc(40 * var(--u));
+
+    color: var(--flow-icon-color);
+
+}
+
+
+.flow-icon svg {
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
 
 }
 
 
 .flow-title {
 
-    margin-top: 0.7vh;
+    margin-top: calc(8 * var(--u));
 
-    font-size:
-        clamp(
-            18px,
-            1.5vw,
-            28px
-        );
+    font-size: calc(28 * var(--u));
 
     font-weight: 800;
 
@@ -487,14 +463,9 @@ body[data-theme="dark"] .display-container {
 
 .flow-description {
 
-    margin-top: 4px;
+    margin-top: calc(4 * var(--u));
 
-    font-size:
-        clamp(
-            12px,
-            1vw,
-            18px
-        );
+    font-size: calc(18 * var(--u));
 
     color:
         var(--display-secondary-text);
@@ -504,12 +475,7 @@ body[data-theme="dark"] .display-container {
 
 .flow-arrow {
 
-    font-size:
-        clamp(
-            25px,
-            2.5vw,
-            50px
-        );
+    font-size: calc(48 * var(--u));
 
     color: #94a3b8;
 
@@ -522,12 +488,7 @@ body[data-theme="dark"] .display-container {
 
 .thank-you {
 
-    font-size:
-        clamp(
-            18px,
-            1.5vw,
-            30px
-        );
+    font-size: calc(29 * var(--u));
 
     color:
         var(--display-secondary-text);
@@ -539,7 +500,7 @@ body[data-theme="dark"] .display-container {
 
 .idle-thank-you {
 
-    margin-top: 2vh;
+    margin-top: calc(22 * var(--u));
 
 }
 
@@ -588,16 +549,11 @@ body.call-active .display-container {
 
 .proceed-message {
 
-    font-size:
-        clamp(
-            28px,
-            3vw,
-            52px
-        );
+    font-size: calc(52 * var(--u));
 
     color: #ffffff;
 
-    margin-bottom: 1vh;
+    margin-bottom: calc(11 * var(--u));
 
 }
 
@@ -608,18 +564,9 @@ body.call-active .display-container {
 
 .register-box {
 
-    width:
-        min(
-            86vw,
-            1650px
-        );
+    width: calc(1650 * var(--u));
 
-    height:
-        clamp(
-            250px,
-            32vh,
-            400px
-        );
+    height: calc(346 * var(--u));
 
     display: flex;
 
@@ -628,11 +575,13 @@ body.call-active .display-container {
     justify-content: center;
     align-items: center;
 
-    padding: 3vh 3vw;
+    padding:
+        calc(32 * var(--u))
+        calc(58 * var(--u));
 
-    margin: 1vh 0;
+    margin: calc(11 * var(--u)) 0;
 
-    border-radius: 28px;
+    border-radius: calc(28 * var(--u));
 
     position: relative;
 
@@ -655,11 +604,12 @@ body.call-active .display-container {
         );
 
     border:
-        2px solid
+        max(2px, calc(2 * var(--u)))
+        solid
         rgba(255,255,255,0.45);
 
     box-shadow:
-        0 20px 60px
+        0 calc(20 * var(--u)) calc(60 * var(--u))
         rgba(0, 100, 60, 0.20);
 
 }
@@ -718,14 +668,9 @@ body.call-active .display-container {
 
     z-index: 2;
 
-    font-size:
-        clamp(
-            30px,
-            3vw,
-            55px
-        );
+    font-size: calc(55 * var(--u));
 
-    margin-bottom: 1vh;
+    margin-bottom: calc(11 * var(--u));
 
 }
 
@@ -740,12 +685,7 @@ body.call-active .display-container {
 
     z-index: 2;
 
-    font-size:
-        clamp(
-            42px,
-            5vw,
-            92px
-        );
+    font-size: calc(92 * var(--u));
 
     font-weight: 800;
 
@@ -772,7 +712,7 @@ body.call-active .display-container {
 
     align-items: baseline;
 
-    gap: 7px;
+    gap: calc(7 * var(--u));
 
     color: #ffffff;
 
@@ -781,12 +721,7 @@ body.call-active .display-container {
 
 .timer {
 
-    font-size:
-        clamp(
-            42px,
-            4vw,
-            75px
-        );
+    font-size: calc(75 * var(--u));
 
     font-weight: 900;
 
@@ -797,12 +732,7 @@ body.call-active .display-container {
 
 .timer-label {
 
-    font-size:
-        clamp(
-            18px,
-            1.4vw,
-            27px
-        );
+    font-size: calc(27 * var(--u));
 
     font-weight: 700;
 
@@ -818,7 +748,7 @@ body.call-active .display-container {
     color:
         rgba(255,255,255,0.78);
 
-    margin-top: 1vh;
+    margin-top: calc(11 * var(--u));
 
 }
 
@@ -851,7 +781,7 @@ body.call-active .display-container {
 
         transform:
             scale(0.88)
-            translateY(20px);
+            translateY(calc(20 * var(--u)));
 
     }
 
@@ -882,24 +812,17 @@ body.call-active .display-container {
 
 .queue-display {
 
-    width: 94vw;
+    width: calc(1805 * var(--u));
 
-    max-width: 1900px;
-
-    height: 88vh;
+    height: calc(950 * var(--u));
 
     display: grid;
 
     grid-template-columns:
         minmax(0, 1fr)
-        clamp(300px, 24vw, 430px);
+        calc(430 * var(--u));
 
-    gap:
-        clamp(
-            20px,
-            2.5vw,
-            50px
-        );
+    gap: calc(48 * var(--u));
 
     align-items: center;
 
@@ -931,61 +854,47 @@ body.call-active .display-container {
 
 .queue-logo {
 
-    max-height: 12vh;
+    max-height: calc(130 * var(--u));
 
 }
 
 
 .now-calling {
 
-    font-size:
-        clamp(
-            36px,
-            3.7vw,
-            68px
-        );
+    font-size: calc(68 * var(--u));
 
     font-weight: 800;
 
     color: #ffffff;
 
-    margin-bottom: 0.5vh;
+    margin-bottom: calc(5 * var(--u));
 
 }
 
 
 .queue-proceed-message {
 
-    font-size:
-        clamp(
-            23px,
-            2.5vw,
-            45px
-        );
+    font-size: calc(45 * var(--u));
 
     color: #ffffff;
 
-    margin-bottom: 1vh;
+    margin-bottom: calc(11 * var(--u));
 
 }
 
 
 /* =========================================================
    QUEUE REGISTER
+   (fills its grid column - no fixed width that can overflow)
    ========================================================= */
 
 .queue-register-box {
 
     width: 100%;
 
-    height:
-        clamp(
-            260px,
-            34vh,
-            390px
-        );
+    height: calc(367 * var(--u));
 
-    margin: 1vh 0;
+    margin: calc(11 * var(--u)) 0;
 
 }
 
@@ -998,26 +907,16 @@ body.call-active .display-container {
 
     align-items: center;
 
-    gap:
-        clamp(
-            15px,
-            2vw,
-            35px
-        );
+    gap: calc(35 * var(--u));
 
-    margin-top: 1vh;
+    margin-top: calc(11 * var(--u));
 
 }
 
 
 .queue-message {
 
-    font-size:
-        clamp(
-            20px,
-            1.8vw,
-            34px
-        );
+    font-size: calc(34 * var(--u));
 
     color: #ffffff;
 
@@ -1027,9 +926,10 @@ body.call-active .display-container {
 .queue-timer-row {
 
     padding:
-        1.2vh 1.7vw;
+        calc(13 * var(--u))
+        calc(33 * var(--u));
 
-    border-radius: 16px;
+    border-radius: calc(16 * var(--u));
 
     background:
         rgba(0, 100, 60, 0.20);
@@ -1045,26 +945,13 @@ body.call-active .display-container {
 
     width: 100%;
 
-    height:
-        clamp(
-            480px,
-            68vh,
-            720px
-        );
+    height: calc(720 * var(--u));
 
     padding:
-        clamp(
-            25px,
-            3vh,
-            45px
-        )
-        clamp(
-            20px,
-            1.5vw,
-            30px
-        );
+        calc(32 * var(--u))
+        calc(29 * var(--u));
 
-    border-radius: 28px;
+    border-radius: calc(28 * var(--u));
 
     display: flex;
 
@@ -1085,11 +972,12 @@ body.call-active .display-container {
         );
 
     border:
-        1px solid
+        max(1px, calc(1 * var(--u)))
+        solid
         rgba(255,255,255,0.35);
 
     box-shadow:
-        0 20px 60px
+        0 calc(20 * var(--u)) calc(60 * var(--u))
         rgba(37,99,235,0.25);
 
 }
@@ -1101,12 +989,7 @@ body.call-active .display-container {
 
 .queue-side-title {
 
-    font-size:
-        clamp(
-            22px,
-            1.9vw,
-            34px
-        );
+    font-size: calc(34 * var(--u));
 
     font-weight: 900;
 
@@ -1121,18 +1004,13 @@ body.call-active .display-container {
 
 .queue-count {
 
-    font-size:
-        clamp(
-            58px,
-            5vw,
-            92px
-        );
+    font-size: calc(92 * var(--u));
 
     font-weight: 900;
 
     line-height: 1;
 
-    margin-top: 2vh;
+    margin-top: calc(22 * var(--u));
 
 }
 
@@ -1156,11 +1034,11 @@ body.call-active .display-container {
 
     width: 88%;
 
-    height: 1px;
+    height: max(1px, calc(1 * var(--u)));
 
     margin:
-        2.5vh 0
-        2vh;
+        calc(27 * var(--u)) 0
+        calc(22 * var(--u));
 
     background:
         rgba(255,255,255,0.30);
@@ -1174,20 +1052,15 @@ body.call-active .display-container {
 
 .queue-next-label {
 
-    font-size:
-        clamp(
-            14px,
-            1vw,
-            20px
-        );
+    font-size: calc(19 * var(--u));
 
     font-weight: 800;
 
-    letter-spacing: 1px;
+    letter-spacing: calc(1 * var(--u));
 
     opacity: 0.85;
 
-    margin-bottom: 1.5vh;
+    margin-bottom: calc(16 * var(--u));
 
 }
 
@@ -1204,7 +1077,7 @@ body.call-active .display-container {
 
     flex-direction: column;
 
-    gap: 10px;
+    gap: calc(10 * var(--u));
 
     overflow: hidden;
 
@@ -1215,29 +1088,26 @@ body.call-active .display-container {
 
     width: 100%;
 
-    min-height:
-        clamp(
-            56px,
-            6vh,
-            75px
-        );
+    min-height: calc(65 * var(--u));
 
     display: flex;
 
     align-items: center;
 
-    gap: 12px;
+    gap: calc(12 * var(--u));
 
     padding:
-        8px 12px;
+        calc(8 * var(--u))
+        calc(12 * var(--u));
 
-    border-radius: 15px;
+    border-radius: calc(15 * var(--u));
 
     background:
         rgba(255,255,255,0.15);
 
     border:
-        1px solid
+        max(1px, calc(1 * var(--u)))
+        solid
         rgba(255,255,255,0.20);
 
     color: #ffffff;
@@ -1251,22 +1121,22 @@ body.call-active .display-container {
 
 .queue-item-number {
 
-    flex: 0 0 45px;
+    flex: 0 0 calc(45 * var(--u));
 
-    width: 45px;
-    height: 45px;
+    width: calc(45 * var(--u));
+    height: calc(45 * var(--u));
 
     display: flex;
 
     justify-content: center;
     align-items: center;
 
-    border-radius: 13px;
+    border-radius: calc(13 * var(--u));
 
     background:
         rgba(255,255,255,0.20);
 
-    font-size: 22px;
+    font-size: calc(22 * var(--u));
 
     font-weight: 900;
 
@@ -1283,12 +1153,7 @@ body.call-active .display-container {
 
     min-width: 0;
 
-    font-size:
-        clamp(
-            15px,
-            1.2vw,
-            22px
-        );
+    font-size: calc(22 * var(--u));
 
     font-weight: 600;
 
@@ -1330,7 +1195,7 @@ body.call-active .display-container {
 
     position: fixed;
 
-    bottom: 10px;
+    bottom: calc(18 * var(--u));
 
     left: 0;
     right: 0;
@@ -1339,17 +1204,12 @@ body.call-active .display-container {
 
     text-align: center;
 
-    font-size:
-        clamp(
-            10px,
-            0.75vw,
-            15px
-        );
+    font-size: calc(22 * var(--u));
 
     color:
         rgba(15,23,42,0.62);
 
-    letter-spacing: 0.5px;
+    letter-spacing: calc(0.5 * var(--u));
 
 }
 
@@ -1366,7 +1226,7 @@ body.call-active .display-container {
 
 .product-branding .branding-separator {
 
-    margin: 0 6px;
+    margin: 0 calc(10 * var(--u));
 
     color:
         rgba(99,102,241,0.75);
@@ -1386,14 +1246,9 @@ body.call-active .display-container {
 
 .product-branding .copyright {
 
-    margin-top: 3px;
+    margin-top: calc(5 * var(--u));
 
-    font-size:
-        clamp(
-            8px,
-            0.55vw,
-            11px
-        );
+    font-size: calc(15 * var(--u));
 
     color:
         rgba(15,23,42,0.42);
@@ -1461,6 +1316,7 @@ body.call-active
 
 /* =========================================================
    AD SCREEN
+   (images always fill the whole screen)
    ========================================================= */
 
 #ad-screen {
@@ -1540,7 +1396,7 @@ body.call-active
 
     position: absolute;
 
-    bottom: 20px;
+    bottom: calc(20 * var(--u));
 
     left: 50%;
 
@@ -1549,15 +1405,15 @@ body.call-active
 
     display: flex;
 
-    gap: 7px;
+    gap: calc(7 * var(--u));
 
 }
 
 
 .ad-dot {
 
-    width: 7px;
-    height: 7px;
+    width: calc(7 * var(--u));
+    height: calc(7 * var(--u));
 
     border-radius: 50%;
 
@@ -1569,253 +1425,20 @@ body.call-active
 
 .ad-dot.active {
 
-    width: 24px;
+    width: calc(24 * var(--u));
 
-    border-radius: 8px;
+    border-radius: calc(8 * var(--u));
 
     background: #ffffff;
 
 }
 
 
-.flow-icon {
-    width: clamp(42px, 4vw, 64px);
-    height: clamp(42px, 4vw, 64px);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    color: var(--flow-icon-color);
-}
-
-.flow-icon svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-
 /* =========================================================
-   RESPONSIVE
+   NOTE ON SCREEN SIZES
+   ---------------------------------------------------------
+   No media queries are needed: --u scales the whole layout
+   from small preview windows up to 8K and video walls.
+   The old "min-width: 1921px" overrides and the
+   max-width 1100 / 850 / 600px breakpoints were removed.
    ========================================================= */
-
-@media (max-width: 1100px) {
-
-    .queue-display {
-
-        grid-template-columns:
-            minmax(0, 1fr)
-            300px;
-
-        gap: 20px;
-
-    }
-
-
-    .queue-side-panel {
-
-        height: 65vh;
-
-    }
-
-}
-
-
-@media (max-width: 850px) {
-
-    .queue-display {
-
-        grid-template-columns: 1fr;
-
-        height: 90vh;
-
-        overflow-y: auto;
-
-        padding-bottom: 60px;
-
-    }
-
-
-    .queue-side-panel {
-
-        width: 90vw;
-
-        height: auto;
-
-        min-height: auto;
-
-    }
-
-
-    .queue-list {
-
-        max-height: 220px;
-
-    }
-
-}
-
-
-@media (max-width: 600px) {
-
-    .welcome {
-
-        font-size: 34px;
-
-    }
-
-
-    .next-cashier {
-
-        font-size: 28px;
-
-    }
-
-
-    .wait-message {
-
-        font-size: 18px;
-
-    }
-
-
-    .customer-flow {
-
-        gap: 8px;
-
-    }
-
-
-    .flow-arrow {
-
-        font-size: 20px;
-
-    }
-
-
-    .flow-title {
-
-        font-size: 14px;
-
-    }
-
-
-    .flow-description {
-
-        font-size: 10px;
-
-    }
-
-
-    .register-box {
-
-        width: 92vw;
-
-        height: 230px;
-
-    }
-
-
-    .register-name {
-
-        font-size: 32px;
-
-    }
-
-
-    .queue-bottom-row {
-
-        flex-direction: column;
-
-        gap: 8px;
-
-    }
-
-}
-
-
-
-
-/* Consistent sizing on high-resolution displays */
-:root {
-    --tv-scale: clamp(1, 100vw / 1920, 3);
-}
-
-@media (min-width: 1921px) {
-    .display-state {
-        width: 96vw;
-        max-width: none;
-        height: 94vh;
-        max-height: none;
-    }
-
-    .store-logo {
-        max-width: 30vw;
-        max-height: 20vh;
-    }
-
-    .store-name {
-        font-size: clamp(44px, 2.3vw, 88px);
-    }
-
-    .welcome {
-        font-size: clamp(64px, 4.5vw, 150px);
-    }
-
-    .next-cashier,
-    .now-calling {
-        font-size: clamp(58px, 3.7vw, 120px);
-    }
-
-    .wait-message {
-        font-size: clamp(30px, 1.8vw, 60px);
-    }
-
-    .flow-icon {
-        width: clamp(90px, 4.5vw, 150px);
-        height: clamp(90px, 4.5vw, 150px);
-    }
-
-    .flow-title {
-        font-size: clamp(32px, 1.5vw, 52px);
-    }
-
-    .flow-description {
-        font-size: clamp(22px, 1vw, 34px);
-    }
-
-    .register-box {
-        width: 90vw;
-        max-width: none;
-        height: 32vh;
-    }
-
-    .register-name {
-        font-size: clamp(64px, 4.5vw, 150px);
-    }
-
-    .timer {
-        font-size: clamp(64px, 4vw, 120px);
-    }
-
-    .queue-display {
-        width: 96vw;
-        max-width: none;
-        height: 92vh;
-        grid-template-columns: minmax(0, 1fr) 24vw;
-    }
-
-    .queue-side-panel {
-        height: 68vh;
-        max-height: none;
-    }
-
-    .product-branding {
-        font-size: clamp(18px, 0.75vw, 30px);
-    }
-
-    .product-branding .copyright {
-        font-size: clamp(14px, 0.55vw, 22px);
-    }
-}
-
