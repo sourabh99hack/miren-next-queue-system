@@ -1732,3 +1732,76 @@ body.call-active
     }
 
 }
+
+
+
+/* For 4k and bigger size tv's */
+/* Fluid sizing across all screen resolutions */
+
+.display-container {
+    width: 100%;
+    width: 100vw;
+    height: 100%;
+    height: 100vh;
+}
+
+.display-state {
+    width: 96%;
+    width: 96vw;
+    max-width: none;
+    height: 94%;
+    height: 94vh;
+    max-height: none;
+}
+
+.store-logo {
+    max-width: min(30vw, 12vh * 4);
+    max-height: 20vh;
+    object-fit: contain;
+}
+
+.store-name {
+    font-size: clamp(24px, 2.3vw, 88px);
+}
+
+.welcome {
+    font-size: clamp(32px, 4.5vw, 150px);
+}
+
+.next-cashier,
+.now-calling {
+    font-size: clamp(28px, 3.7vw, 120px);
+}
+
+.wait-message {
+    font-size: clamp(18px, 1.8vw, 60px);
+}
+
+.flow-icon {
+    width: clamp(48px, 4.5vw, 150px);
+    height: clamp(48px, 4.5vw, 150px);
+}
+
+.flow-title {
+    font-size: clamp(16px, 1.5vw, 52px);
+}
+
+.flow-description {
+    font-size: clamp(12px, 1vw, 34px);
+}
+
+.register-name {
+    font-size: clamp(32px, 4.5vw, 150px);
+}
+
+.timer {
+    font-size: clamp(36px, 4vw, 120px);
+}
+
+.product-branding {
+    font-size: clamp(10px, 0.75vw, 30px);
+}
+
+.product-branding .copyright {
+    font-size: clamp(8px, 0.55vw, 22px);
+}
